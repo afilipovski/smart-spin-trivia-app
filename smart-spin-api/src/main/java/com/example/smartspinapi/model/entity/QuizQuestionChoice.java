@@ -15,4 +15,5 @@ public class QuizQuestionChoice extends BaseEntity {
     @JoinColumn(name = "question_id")
     private QuizQuestion question;
     private String content;
+    private Boolean correct;
 }

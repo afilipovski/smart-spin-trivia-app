@@ -13,8 +13,6 @@ public class QuizQuestion extends BaseEntity {
     @ManyToOne
     @JoinColumn(name="category_id")
     private QuizCategory category;
-    @OneToOne
-    private QuizQuestionChoice correctChoice;
     @OneToMany(mappedBy = "question")
     private List<QuizQuestionChoice> choices;
     private String content;
