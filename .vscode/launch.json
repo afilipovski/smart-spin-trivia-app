@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "trivia_app",
+      "cwd": "Frontend/trivia_app",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "trivia_app (profile mode)",
+      "cwd": "Frontend/trivia_app",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "trivia_app (release mode)",
+      "cwd": "Frontend/trivia_app",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    },
+    {
+      "name": "Flutter (iPhone 15)",
+      "program": "lib/main.dart",
+      "cwd": "Frontend/trivia_app",
+      "deviceId": "F044309C-971D-4C4A-A5A6-17E692A5AA1D",
+      "request": "launch",
+      "type": "dart"
+    }
+  ]
+}

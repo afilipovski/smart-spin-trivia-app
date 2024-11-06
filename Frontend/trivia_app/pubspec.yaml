@@ -1,0 +1,32 @@
+name: trivia_app
+description: "Frontend for our Trivia app"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.4 <4.0.0"
+
+dependencies:
+  google_fonts: ^6.2.1
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  json_serializable: ^6.8.0
+  json_annotation: ^4.9.0
+  build_runner: ^2.4.11
+  flutter_bloc: ^8.1.6
+  bloc: ^8.1.4
+  equatable: ^2.0.5
+  http: ^1.2.2
+  path_provider: ^2.1.4
+  lottie: ^3.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/confetti_animation.json
+    - assets/sad_emoji_animation.json
