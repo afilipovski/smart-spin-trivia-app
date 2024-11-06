@@ -14,12 +14,12 @@ import java.util.Optional;
 public class UserProfileService {
     private final UserProfileRepository userProfileRepository;
 
-    public UserProfile register(String id, String email, String fullName, LocalDate birthday) {
+    public UserProfile register(String id, String email, String fullName, LocalDate birthDate) {
         Optional<UserProfile> existingProfile = userProfileRepository.getUserProfileById(id);
         if (existingProfile.isPresent()) {
             throw new UserProfileAlreadyExistsException(id);
         }
-        UserProfile profile = new UserProfile(id, email, fullName, birthday);
+        UserProfile profile = new UserProfile(id, email, fullName, birthDate);
         return userProfileRepository.save(profile);
     }
 }

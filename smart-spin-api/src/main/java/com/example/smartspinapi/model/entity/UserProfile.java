@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,19 +21,19 @@ public class UserProfile {
     private String id;
     private String email;
     private String fullName;
-    private LocalDate birthday;
+    private LocalDate birthDate;
     @ManyToMany
     private List<UserProfile> friends;
     private Integer streak;
-    private LocalDate streakLastExtended;
+    private ZonedDateTime streakLastExtended;
 
-    public UserProfile(String id, String email, String fullName, LocalDate birthday) {
+    public UserProfile(String id, String email, String fullName, LocalDate birthDate) {
         this.id = id;
         this.email = email;
         this.fullName = fullName;
-        this.birthday = birthday;
+        this.birthDate = birthDate;
         this.friends = new ArrayList<>();
         this.streak = 0;
-        this.streakLastExtended = LocalDate.of(2000,1,1);
+        this.streakLastExtended = ZonedDateTime.now();
     }
 }

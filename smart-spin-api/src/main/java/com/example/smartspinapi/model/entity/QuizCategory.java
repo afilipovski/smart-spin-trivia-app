@@ -8,6 +8,6 @@ import java.util.List;
 @Entity
 public class QuizCategory extends BaseEntity {
     private String name;
-    @OneToMany
+    @OneToMany(mappedBy = "category")
     private List<QuizQuestion> questions;
 }
