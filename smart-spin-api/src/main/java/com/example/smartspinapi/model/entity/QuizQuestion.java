@@ -5,15 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
-public class QuizQuestion {
-    @Id
-    @GeneratedValue
-    private UUID id;
+public class QuizQuestion extends BaseEntity {
     @ManyToOne
     private QuizCategory category;
     @OneToOne

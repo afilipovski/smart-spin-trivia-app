@@ -6,15 +6,11 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
-public class QuizSession {
-    @Id
-    @GeneratedValue
-    private UUID id;
+public class QuizSession extends BaseEntity {
     @ManyToOne
     private Quiz quiz;
     @OneToOne
