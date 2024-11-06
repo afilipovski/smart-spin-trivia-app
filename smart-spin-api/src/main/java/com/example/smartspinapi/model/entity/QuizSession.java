@@ -12,15 +12,15 @@ import java.util.List;
 @Setter
 public class QuizSession extends BaseEntity {
     @ManyToOne
-    private Quiz quiz;
+    public Quiz quiz;
     @OneToOne
-    private UserProfile userProfile;
+    public UserProfile userProfile;
     @ManyToMany
-    private List<QuizQuestion> questions;
-    private Integer xpCollected;
+    public List<QuizQuestion> questions;
+    public Integer xpCollected;
 
-    private String joinCode;
+    public String joinCode;
     @ManyToOne
-    private QuizQuestion activeQuestion;
-    private LocalDateTime timeActiveQuestionServed;
+    public QuizQuestion activeQuestion;
+    public LocalDateTime timeActiveQuestionServed;
 }

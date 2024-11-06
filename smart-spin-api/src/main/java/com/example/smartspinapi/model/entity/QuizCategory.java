@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 public class QuizCategory extends BaseEntity {
-    private String name;
+    public String name;
     @OneToMany(mappedBy = "category")
     private List<QuizQuestion> questions;
 }

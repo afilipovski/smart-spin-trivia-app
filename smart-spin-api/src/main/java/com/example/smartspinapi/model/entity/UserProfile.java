@@ -18,14 +18,14 @@ import java.util.List;
 @NoArgsConstructor
 public class UserProfile {
     @Id
-    private String id;
-    private String email;
-    private String fullName;
-    private LocalDate birthDate;
+    public String id;
+    public String email;
+    public String fullName;
+    public LocalDate birthDate;
     @ManyToMany
-    private List<UserProfile> friends;
-    private Integer streak;
-    private ZonedDateTime streakLastExtended;
+    public List<UserProfile> friends;
+    public Integer streak;
+    public ZonedDateTime streakLastExtended;
 
     public UserProfile(String id, String email, String fullName, LocalDate birthDate) {
         this.id = id;

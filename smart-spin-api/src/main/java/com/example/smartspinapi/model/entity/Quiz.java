@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 public class Quiz extends BaseEntity {
     @ManyToOne
-    private QuizCategory quizCategory;
-    private Integer xpPerQuestion;
+    public QuizCategory quizCategory;
+    public Integer xpPerQuestion;
     @OneToOne
-    private LimitedTimeEvent event;
+    public LimitedTimeEvent event;
 }

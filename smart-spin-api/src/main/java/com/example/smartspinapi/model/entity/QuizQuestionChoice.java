@@ -13,7 +13,7 @@ import lombok.Setter;
 public class QuizQuestionChoice extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "question_id")
-    private QuizQuestion question;
-    private String content;
-    private Boolean correct;
+    public QuizQuestion question;
+    public String content;
+    public Boolean correct;
 }

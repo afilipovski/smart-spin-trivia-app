@@ -12,8 +12,8 @@ import java.util.List;
 public class QuizQuestion extends BaseEntity {
     @ManyToOne
     @JoinColumn(name="category_id")
-    private QuizCategory category;
+    public QuizCategory category;
     @OneToMany(mappedBy = "question")
-    private List<QuizQuestionChoice> choices;
-    private String content;
+    public List<QuizQuestionChoice> choices;
+    public String content;
 }

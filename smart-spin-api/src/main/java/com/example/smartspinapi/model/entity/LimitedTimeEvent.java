@@ -10,6 +10,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class LimitedTimeEvent extends BaseEntity {
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    public LocalDateTime startTime;
+    public LocalDateTime endTime;
 }
