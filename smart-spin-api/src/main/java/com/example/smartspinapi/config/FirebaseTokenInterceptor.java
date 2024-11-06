@@ -13,15 +13,16 @@ public class FirebaseTokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
-        String token = request.getHeader("Authorization");
+        String authorization = request.getHeader("Authorization");
 
-        if (token == null) {
+        if (authorization == null) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write("Missing authentication token");
             return false;
         }
 
         try {
+            String token = authorization.split(" ")[1];
             FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
             request.setAttribute("uid", decodedToken.getUid());
             request.setAttribute("email", decodedToken.getEmail());

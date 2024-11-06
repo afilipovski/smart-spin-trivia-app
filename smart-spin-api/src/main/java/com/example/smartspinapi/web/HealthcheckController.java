@@ -1,12 +1,13 @@
 package com.example.smartspinapi.web;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class HealthcheckController {
     @GetMapping("/health")
-    public String healthcheck() {
-        return "healthy";
+    public String healthcheck(@RequestAttribute String uid) {
+        return "Server healthy, uid " + uid;
     }
 }
