@@ -35,3 +35,5 @@ build/
 
 # Firebase secret
 serviceAccountKey.json
+
+create.sql
