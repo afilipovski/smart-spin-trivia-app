@@ -27,7 +27,7 @@ public class UserProfileController {
                                     @RequestAttribute String email,
                                     @RequestBody RegisterUserProfileDTO registerUserProfileDTO) {
         return userProfileService.register(uid, email,
-                registerUserProfileDTO.getFullName(),
-                registerUserProfileDTO.getBirthDate());
+                registerUserProfileDTO.fullName,
+                registerUserProfileDTO.birthDate);
     }
 }
