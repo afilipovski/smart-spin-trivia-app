@@ -31,7 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
 .envrc
+.env
 
 # Firebase secret
 serviceAccountKey.json
