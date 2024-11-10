@@ -1,7 +1,7 @@
 package com.example.smartspinapi.resolvers;
 
 import com.example.smartspinapi.model.entity.UserProfile;
-import com.example.smartspinapi.model.exception.UserProfileDoesntExistException;
+import com.example.smartspinapi.model.exception.UserProfileNotFoundException;
 import com.example.smartspinapi.repository.UserProfileRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +32,6 @@ public class TriviaUserArgumentResolver implements HandlerMethodArgumentResolver
         String uid = (String) webRequest.getAttribute("uid", RequestAttributes.SCOPE_REQUEST);
 
         return userProfileRepository.getUserProfileById(uid)
-                .orElseThrow(() -> new UserProfileDoesntExistException(uid));
+                .orElseThrow(() -> new UserProfileNotFoundException(uid));
     }
 }
