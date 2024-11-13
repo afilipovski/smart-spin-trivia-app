@@ -5,6 +5,7 @@ import com.example.smartspinapi.model.entity.UserProfile;
 import com.example.smartspinapi.resolvers.TriviaUser;
 import com.example.smartspinapi.service.QuizQuestionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class QuizQuestionController {
     private final QuizQuestionService quizQuestionService;
 
+    @GetMapping("/random")
     public QuizQuestion serveRandomQuizQuestion(@TriviaUser UserProfile userProfile) {
         return quizQuestionService.serveRandomQuestion(userProfile);
     }

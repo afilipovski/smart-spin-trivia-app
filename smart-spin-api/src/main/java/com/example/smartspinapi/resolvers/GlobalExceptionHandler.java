@@ -1,5 +1,7 @@
 package com.example.smartspinapi.resolvers;
 
+import com.example.smartspinapi.model.exception.TriviaEntityExistsException;
+import com.example.smartspinapi.model.exception.TriviaEntityNotFoundException;
 import com.example.smartspinapi.model.exception.UserProfileExistsException;
 import com.example.smartspinapi.model.exception.UserProfileNotFoundException;
 import jakarta.persistence.EntityExistsException;
@@ -17,13 +19,13 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(exception.getMessage());
     }
-    @ExceptionHandler({UserProfileExistsException.class, EntityExistsException.class})
+    @ExceptionHandler({UserProfileExistsException.class, EntityExistsException.class, TriviaEntityExistsException.class})
     public ResponseEntity<Object> handleEntityExistsException(RuntimeException exception) {
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(exception.getMessage());
     }
-    @ExceptionHandler({EntityNotFoundException.class})
+    @ExceptionHandler({EntityNotFoundException.class, TriviaEntityNotFoundException.class})
     public ResponseEntity<Object> handleEntityNotFoundException(UserProfileNotFoundException exception) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)

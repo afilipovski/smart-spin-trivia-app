@@ -19,8 +19,7 @@ public class QuizSessionService {
 
     public QuizSession createQuizSession(UUID quizId, UserProfile userProfile) {
         Quiz quiz = quizService.findById(quizId);
-        Optional<QuizSession> existingQuizSession = quizSessionRepository.findByUserProfileId(userProfile.getId());
-        if (existingQuizSession.isPresent())
+        if (userProfile.getQuizSession() != null)
             throw new EntityExistsException("Quiz session with user id " + userProfile.getId() + " already exists");
         QuizSession quizSession = new QuizSession(quiz, userProfile);
         return quizSessionRepository.save(quizSession);
