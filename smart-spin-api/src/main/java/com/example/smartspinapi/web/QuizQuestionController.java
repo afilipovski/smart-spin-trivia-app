@@ -15,6 +15,6 @@ public class QuizQuestionController {
     private final QuizQuestionService quizQuestionService;
 
     public QuizQuestion serveRandomQuizQuestion(@TriviaUser UserProfile userProfile) {
-        return quizQuestionService.serveRandomQuestion();
+        return quizQuestionService.serveRandomQuestion(userProfile);
     }
 }

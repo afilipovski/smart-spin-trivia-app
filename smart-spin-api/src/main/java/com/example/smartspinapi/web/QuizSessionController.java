@@ -19,6 +19,9 @@ public class QuizSessionController {
 
     @PostMapping
     public QuizSession createQuizSession(@RequestBody CreateQuizSessionDTO createQuizSessionDTO, @TriviaUser UserProfile userProfile) {
+        if (createQuizSessionDTO.quizId == null) {
+            throw new IllegalArgumentException("Quiz ID cannot be null");
+        }
         return quizSessionService.createQuizSession(createQuizSessionDTO.quizId, userProfile);
     }
 }
