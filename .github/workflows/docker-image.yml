@@ -26,5 +26,5 @@ jobs:
         run: |
             docker buildx build \
               -t "${{ secrets.DOCKERHUB_USERNAME }}/smart-spin:latest" \
-              . \
+              ./smart-spin-api \
               --push;
