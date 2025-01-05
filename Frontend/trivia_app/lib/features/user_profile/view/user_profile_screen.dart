@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trivia_app/features/friends/view/add_friend_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   final String username;
@@ -128,6 +129,16 @@ class ProfileScreen extends StatelessWidget {
                   : const Center(
                       child: Text("No friends yet."),
                     ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AddFriendScreen()),
+                );
+              },
+              child: const Text("Add Friends"),
             ),
           ],
         ),
