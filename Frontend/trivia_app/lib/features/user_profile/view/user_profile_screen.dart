@@ -130,15 +130,21 @@ class ProfileScreen extends StatelessWidget {
                       child: Text("No friends yet."),
                     ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AddFriendScreen()),
-                );
-              },
-              child: const Text("Add Friends"),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AddFriendScreen()),
+                      );
+                    },
+                    child: const Text("Add Friends"),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
