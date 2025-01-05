@@ -49,7 +49,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                   child: TextField(
                     controller: _friendNameController,
                     decoration: const InputDecoration(
-                      hintText: "Friend's name",
+                      hintText: "Friend's username",
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -58,7 +58,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                 ElevatedButton(
                   onPressed: _addFriend,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 220, 63, 144),
+                    shape: const BeveledRectangleBorder(),
                   ),
                   child: const Text("Add"),
                 ),
