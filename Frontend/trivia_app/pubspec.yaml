@@ -30,3 +30,4 @@ flutter:
   assets:
     - assets/confetti_animation.json
     - assets/sad_emoji_animation.json
+    - assets/astronaut.png
