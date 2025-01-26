@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_app/features/authentication/view/login_screen.dart';
+import 'package:trivia_app/features/home_screen.dart';
 import 'package:trivia_app/features/questions/bloc/question_bloc.dart';
 import 'package:trivia_app/trivia_app_bloc_observer.dart';
 import 'package:trivia_app/core/services/category_service.dart';
 import 'package:trivia_app/features/category/bloc/category_bloc.dart';
-import 'package:trivia_app/features/category/view/category_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +41,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple),
         useMaterial3: true,
       ),
-      home: const LoginScreen(),
+      home: const HomePage(),
     );
   }
 }

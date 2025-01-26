@@ -7,7 +7,6 @@ import 'package:trivia_app/features/category/bloc/category_bloc.dart';
 import 'package:trivia_app/features/category/bloc/category_event.dart';
 import 'package:trivia_app/features/category/bloc/category_state.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
-import 'package:trivia_app/features/category/view/categories_state_update_page.dart';
 import 'package:trivia_app/features/questions/view/questions_screen.dart';
 
 import '../../../models.dart';
