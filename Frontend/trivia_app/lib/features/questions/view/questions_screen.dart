@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_app/core/domain/models/category.dart';
 import 'package:trivia_app/features/category/view/category_screen.dart';
+import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/bloc/question_bloc.dart';
 import 'package:trivia_app/features/questions/constants/app_colors.dart';
 import 'package:trivia_app/features/questions/view/choice_tile.dart';
 import 'package:trivia_app/features/results/view/loser_page.dart';
-import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/results/view/winner_page.dart';
 
 class QuestionsScreen extends StatefulWidget {
@@ -15,6 +15,7 @@ class QuestionsScreen extends StatefulWidget {
     required this.category,
     required this.gradientColor,
   });
+
   final Category category;
   final GradientColor gradientColor;
 
@@ -24,195 +25,139 @@ class QuestionsScreen extends StatefulWidget {
 
 class _QuestionsScreenState extends State<QuestionsScreen> {
   int selectedTileIndex = -1;
-  int currentQuestionIndex = -1;
-
-  @override
-  void initState() {
-    super.initState();
-    BlocProvider.of<QuestionBloc>(context).add(
-      QuestionsScreenInitialized(categoryId: widget.category.id),
-    );
-  }
+  bool hasWon = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        flexibleSpace: Container(),
-        backgroundColor: AppColors.appBarBackground,
-        elevation: 0,
-        title: Text(
-          widget.category.name,
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => const CategoryScreen(),
-              ),
-            );
-          },
-        ),
-      ),
-      body: BlocConsumer<QuestionBloc, QuestionState>(
+      body: BlocBuilder<QuestionBloc, QuestionState>(
         builder: (context, state) {
-          if (state is QuestionAnswering) {
-            currentQuestionIndex =
-                state.questions.indexOf(state.currentQuestion);
-          }
           return Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: AppColors.gradientColors,
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF2B1055),
+                  Color(0xFF7597DE),
+                ],
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (state is QuestionLoadInProgress)
-                  const LinearProgressIndicator(),
-                if (state is QuestionAnswering)
-                  LinearProgressIndicator(
-                    value: (currentQuestionIndex + 1) / state.questions.length,
-                    backgroundColor: Colors.grey[200],
-                    valueColor:
-                        const AlwaysStoppedAnimation<Color>(Colors.purple),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 60),
+                  const Text(
+                    'Question 1',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                const SizedBox(height: 20),
-                if (state is QuestionAnswering)
+                  const SizedBox(height: 40),
                   Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal: 20,
-                        ).copyWith(bottom: 20),
-                        child: Text(
-                          'Question ${currentQuestionIndex + 1} of ${state.questions.length}',
-                          style: const TextStyle(
-                            color: AppColors.mainPurpleShade,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                const SizedBox(height: 8.0),
-                if (state is QuestionAnswering)
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          state.currentQuestion.content,
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                        const SizedBox(height: 20),
-                        Column(
-                          children: state.currentQuestion.choices?.map(
-                                (choice) {
-                                  int choiceIndex = state
-                                      .currentQuestion.choices!
-                                      .indexOf(choice);
-                                  return ChoiceTile(
-                                    option: choice.content,
-                                    isSelected:
-                                        selectedTileIndex == choiceIndex,
-                                    onTap: () {
-                                      context.read<QuestionBloc>().add(
-                                            QuestionChoiceTapped(
-                                                choice: choice),
-                                          );
-                                      setState(() {
-                                        selectedTileIndex = choiceIndex;
-                                      });
-                                    },
-                                  );
-                                },
-                              ).toList() ??
-                              [],
-                        ),
-                      ],
-                    ),
-                  ),
-                const Spacer(),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 20.0,
-                      vertical: 80.0,
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          selectedTileIndex = -1;
-                        });
-                        context.read<QuestionBloc>().add(QuestionNextTapped());
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32.0,
-                          vertical: 16.0,
-                        ),
-                        backgroundColor: AppColors.backgroundColor,
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Next',
-                            style: TextStyle(
-                              color: AppColors.mainPurpleShade,
+                    children: List.generate(4, (index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedTileIndex = index;
+                              hasWon = index == 2;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12.0,
+                              horizontal: 16.0,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30.0),
+                              color: selectedTileIndex == index
+                                  ? Colors.white
+                                  : Colors.transparent,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2.0,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: selectedTileIndex == index
+                                        ? Colors.purple
+                                        : Colors.transparent,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 2.0,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  'Answer ${index + 1}',
+                                  style: TextStyle(
+                                    color: selectedTileIndex == index
+                                        ? Colors.purple
+                                        : Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(
-                            width: 8.0,
+                        ),
+                      );
+                    }),
+                  ),
+                  const Spacer(),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return hasWon
+                                  ? const WinnerPage()
+                                  : LoserPage(
+                                      category: widget.category,
+                                      gradientColor: widget.gradientColor,
+                                    );
+                            },
                           ),
-                          Icon(
-                            Icons.arrow_forward,
-                            color: AppColors.mainPurpleShade,
-                          ),
-                        ],
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                          horizontal: 40.0,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
+                      child: const Text(
+                        'Next',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           );
-        },
-        listener: (
-          BuildContext context,
-          QuestionState state,
-        ) {
-          if (state is QuestionAnswersFinished) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) {
-                  return state.hasPassed
-                      ? const WinnerPage()
-                      : LoserPage(
-                          category: widget.category,
-                          gradientColor: widget.gradientColor,
-                        );
-                },
-              ),
-            );
-          }
         },
       ),
     );

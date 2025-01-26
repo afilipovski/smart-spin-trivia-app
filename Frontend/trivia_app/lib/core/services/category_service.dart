@@ -5,40 +5,44 @@ import 'package:trivia_app/core/services/http_service.dart';
 import 'package:trivia_app/models.dart';
 
 class CategoryService {
-  CategoryService([HttpService? client]) {
-    _client = client ?? HttpService();
+  CategoryService(
+      // [HttpService? client]
+      ) {
+    // _client = client ?? HttpService();
   }
 
-  late final HttpService _client;
+  // late final HttpService _client;
 
   Future<List<Category>> getCategories() async {
-    final List response = await _client.get("categories");
-    return response
-        .map((c) => CategoryDto.fromJson(c))
-        .map((dto) => Category(id: dto.id, name: dto.name))
-        .toList();
+    // final List response = await _client.get("categories");
+    // return response
+    //     .map((c) => CategoryDto.fromJson(c))
+    //     .map((dto) => Category(id: dto.id, name: dto.name))
+    //     .toList();
+    return Future.value();
   }
 
   Future<Iterable<Question>> getRandomQuestionsForCategory(
     String categoryId, {
     Map<String, dynamic>? queryParameters,
   }) async {
-    var path = 'categories/$categoryId';
-    final List response =
-        await _client.get(path, queryParameters: queryParameters);
-    response.shuffle(Random());
-    return response.map((q) => Question.fromJson(q));
+    // var path = 'categories/$categoryId';
+    // final List response =
+    //     await _client.get(path, queryParameters: queryParameters);
+    // response.shuffle(Random());
+    // return response.map((q) => Question.fromJson(q));
+    return Future.value();
   }
 
   Future<void> postCategory(Object requestBody) async {
-    await _client.post("categories", requestBody);
+    // await _client.post("categories", requestBody);
   }
 
   Future<void> putCategory(Object requestBody) async {
-    await _client.put("categories", requestBody);
+    // await _client.put("categories", requestBody);
   }
 
   Future<void> deleteCategory(String id) async {
-    await _client.delete("categories/$id");
+    // await _client.delete("categories/$id");
   }
 }
