@@ -163,7 +163,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                             'Next',
                             style: TextStyle(
                               color: Colors.black,
-                              fontSize: 18,
+                              fontSize: 16,
                             ),
                           ),
                         ),
