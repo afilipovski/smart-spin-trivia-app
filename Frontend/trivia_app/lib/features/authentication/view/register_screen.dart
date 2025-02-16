@@ -17,12 +17,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
+  bool _isPasswordObscured = true;
+  bool _isConfirmPasswordObscured = true;
+
   void dismissKeyboard(BuildContext buildContext) {
     final FocusScopeNode currentFocus = FocusScope.of(buildContext);
-
     if (!currentFocus.hasPrimaryFocus) {
       currentFocus.unfocus();
     }
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isPasswordObscured = !_isPasswordObscured;
+    });
+  }
+
+  void _toggleConfirmPasswordVisibility() {
+    setState(() {
+      _isConfirmPasswordObscured = !_isConfirmPasswordObscured;
+    });
   }
 
   @override
@@ -76,30 +90,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                _buildTextField(
-                    'Name', 'Enter your name here', _usernameController),
+                _buildTextField('Name', _usernameController),
                 const SizedBox(height: 20),
-                _buildTextField(
-                  'Birthday',
-                  'DD/MM/YYYY',
-                  _dobController,
-                  isDatePicker: true,
-                  context: context,
-                ),
+                _buildTextField('Birthday', _dobController, isDatePicker: true),
                 const SizedBox(height: 20),
-                _buildTextField(
-                    'Email', 'Enter your email here', _emailController),
+                _buildTextField('Email', _emailController),
                 const SizedBox(height: 20),
-                _buildTextField(
-                    'Password', 'Enter your password here', _passwordController,
-                    isPassword: true),
+                _buildTextField('Password', _passwordController,
+                    isPassword: true,
+                    isObscured: _isPasswordObscured,
+                    toggleVisibility: _togglePasswordVisibility),
                 const SizedBox(height: 20),
-                _buildTextField(
-                  'Confirm password',
-                  'Confirm password',
-                  _confirmPasswordController,
-                  isPassword: true,
-                ),
+                _buildTextField('Confirm Password', _confirmPasswordController,
+                    isPassword: true,
+                    isObscured: _isConfirmPasswordObscured,
+                    toggleVisibility: _toggleConfirmPasswordVisibility),
                 const SizedBox(height: 30),
                 Row(
                   children: [
@@ -141,63 +146,46 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildTextField(
-    String label,
-    String hint,
-    TextEditingController controller, {
-    bool isPassword = false,
-    bool isDatePicker = false,
-    BuildContext? context,
-  }) {
-    return TextField(
+  Widget _buildTextField(String label, TextEditingController controller,
+      {bool isPassword = false,
+      bool isDatePicker = false,
+      bool isObscured = false,
+      VoidCallback? toggleVisibility}) {
+    return TextFormField(
       controller: controller,
       readOnly: isDatePicker,
-      obscureText: isPassword,
+      obscureText: isPassword ? isObscured : false,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: Colors.white),
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white70),
         filled: true,
         fillColor: const Color(0xFF755FB5),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
-        suffixIcon: isDatePicker
+        suffixIcon: isPassword
             ? IconButton(
-                icon: const Icon(Icons.calendar_today, color: Colors.white),
-                onPressed: () async {
-                  if (context != null) {
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(1900),
-                      lastDate: DateTime.now(),
-                    );
-                    if (pickedDate != null) {
-                      controller.text =
-                          "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-                    }
-                  }
-                },
+                icon: Icon(
+                  isObscured ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.white,
+                ),
+                onPressed: toggleVisibility,
               )
             : null,
       ),
       style: const TextStyle(color: Colors.white),
       onTap: isDatePicker
           ? () async {
-              if (context != null) {
-                DateTime? pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime.now(),
-                );
-                if (pickedDate != null) {
-                  controller.text =
-                      "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-                }
+              DateTime? pickedDate = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(1900),
+                lastDate: DateTime.now(),
+              );
+              if (pickedDate != null) {
+                controller.text =
+                    "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
               }
             }
           : null,

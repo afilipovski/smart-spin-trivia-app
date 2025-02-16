@@ -13,6 +13,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isObscured = true;
 
   void dismissKeyboard(BuildContext buildContext) {
     final FocusScopeNode currentFocus = FocusScope.of(buildContext);
@@ -20,6 +21,12 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!currentFocus.hasPrimaryFocus) {
       currentFocus.unfocus();
     }
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isObscured = !_isObscured;
+    });
   }
 
   @override
@@ -56,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 40),
-                TextField(
+                TextFormField(
                   controller: _usernameController,
                   decoration: InputDecoration(
                     labelText: 'Name',
@@ -71,9 +78,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: const TextStyle(color: Colors.white),
                 ),
                 const SizedBox(height: 20),
-                TextField(
+                TextFormField(
                   controller: _passwordController,
-                  obscureText: true,
+                  obscureText: _isObscured,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     labelStyle: const TextStyle(color: Colors.white),
@@ -83,8 +90,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
+                    suffixIconColor: Colors.white,
+                    suffixIcon: GestureDetector(
+                      onTap: _togglePasswordVisibility,
+                      child: _isObscured
+                          ? const Icon(Icons.visibility_off)
+                          : const Icon(Icons.visibility),
+                    ),
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 40),
                 Row(
