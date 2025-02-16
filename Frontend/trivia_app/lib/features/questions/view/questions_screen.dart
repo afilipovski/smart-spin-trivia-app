@@ -4,8 +4,6 @@ import 'package:trivia_app/core/domain/models/category.dart';
 import 'package:trivia_app/features/category/view/category_screen.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/bloc/question_bloc.dart';
-import 'package:trivia_app/features/questions/constants/app_colors.dart';
-import 'package:trivia_app/features/questions/view/choice_tile.dart';
 import 'package:trivia_app/features/results/view/loser_page.dart';
 import 'package:trivia_app/features/results/view/winner_page.dart';
 
@@ -30,6 +28,21 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF2B1055),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const CategoryScreen(),
+              ),
+            );
+          },
+        ),
+      ),
       body: BlocBuilder<QuestionBloc, QuestionState>(
         builder: (context, state) {
           return Container(
@@ -52,7 +65,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                   const Text(
                     'Question 1',
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 26,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -118,40 +131,44 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                     }),
                   ),
                   const Spacer(),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return hasWon
-                                  ? const WinnerPage()
-                                  : LoserPage(
-                                      category: widget.category,
-                                      gradientColor: widget.gradientColor,
-                                    );
-                            },
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return hasWon
+                                      ? const WinnerPage()
+                                      : LoserPage(
+                                          category: widget.category,
+                                          gradientColor: widget.gradientColor,
+                                        );
+                                },
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 16.0,
+                              horizontal: 40.0,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
                           ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 16.0,
-                          horizontal: 40.0,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
+                          child: const Text(
+                            'Next',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                            ),
+                          ),
                         ),
                       ),
-                      child: const Text(
-                        'Next',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
+                    ],
                   ),
                   const SizedBox(height: 40),
                 ],
