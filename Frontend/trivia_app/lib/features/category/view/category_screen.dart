@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:trivia_app/features/authentication/view/login_screen.dart';
 import 'package:trivia_app/features/category/bloc/category_bloc.dart';
 import 'package:trivia_app/features/category/bloc/category_event.dart';
 import 'package:trivia_app/features/category/bloc/category_state.dart';
@@ -37,6 +38,18 @@ class _CategoryScreenState extends State<CategoryScreen> {
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).canvasColor,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.logout_outlined, color: Colors.black),
+          onPressed: () {
+            // call a method to logout the user
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LoginScreen(),
+              ),
+            );
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.person, color: Colors.black),
