@@ -18,4 +18,11 @@ public class QuizQuestion extends BaseEntity {
     @OneToMany(mappedBy = "question")
     public List<QuizQuestionChoice> choices;
     public String content;
+
+    public QuizQuestionChoice correctChoice() {
+        return choices.stream()
+                .filter(c -> c.correct)
+                .findAny()
+                .orElseThrow();
+    }
 }

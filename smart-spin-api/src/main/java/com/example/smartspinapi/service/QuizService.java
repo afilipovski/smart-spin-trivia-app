@@ -1,6 +1,7 @@
 package com.example.smartspinapi.service;
 
 import com.example.smartspinapi.model.entity.Quiz;
+import com.example.smartspinapi.model.entity.QuizQuestion;
 import com.example.smartspinapi.repository.QuizRepository;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;

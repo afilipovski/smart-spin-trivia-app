@@ -4,7 +4,9 @@ import com.example.smartspinapi.model.entity.BaseEntity;
 import com.example.smartspinapi.model.entity.QuizQuestion;
 import com.example.smartspinapi.model.entity.QuizSession;
 import com.example.smartspinapi.model.entity.UserProfile;
+import com.example.smartspinapi.model.exception.TriviaEntityExistsException;
 import com.example.smartspinapi.repository.QuizQuestionRepository;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class QuizQuestionService {
     private final QuizQuestionRepository quizQuestionRepository;
+    private final QuizSessionService quizSessionService;
 
     public QuizQuestion serveRandomQuestion(UserProfile userProfile) {
         QuizSession quizSession = userProfile.getQuizSession();
         if (quizSession == null) {
             throw new EntityNotFoundException("Quiz session with user id "+ userProfile.getId() + " not found");
+        }
+        if (quizSession.getActiveQuestion() != null) {
+            throw new EntityExistsException("Quiz session with user id "+ userProfile.getId() + " already has an active question");
         }
         Set<UUID> questionIds = userProfile.getQuizSession()
                 .getQuiz()
@@ -37,6 +43,8 @@ public class QuizQuestionService {
             throw new EntityNotFoundException("No relevant questions found for the quiz with id: " + quizSession.getQuiz().getId());
         }
         Random random = new Random();
-        return eligibleQuestions.get(random.nextInt(eligibleQuestions.size()));
+        QuizQuestion quizQuestion = eligibleQuestions.get(random.nextInt(eligibleQuestions.size()));
+        quizSessionService.setActiveQuestion(userProfile, quizQuestion);
+        return quizQuestion;
     }
 }
