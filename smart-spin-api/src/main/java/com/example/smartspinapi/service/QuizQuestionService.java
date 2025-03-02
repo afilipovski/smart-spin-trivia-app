@@ -22,7 +22,10 @@ public class QuizQuestionService {
         if (quizSession == null) {
             throw new EntityNotFoundException("Quiz session with user id "+ userProfile.getId() + " not found");
         }
-        Set<UUID> questionIds = userProfile.getQuizSession().getQuestions()
+        Set<UUID> questionIds = userProfile.getQuizSession()
+                .getQuiz()
+                .getQuizCategory()
+                .getQuestions()
                 .stream()
                 .map(BaseEntity::getId)
                 .collect(Collectors.toSet());
