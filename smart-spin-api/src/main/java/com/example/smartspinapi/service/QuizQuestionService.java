@@ -28,6 +28,9 @@ public class QuizQuestionService {
         if (quizSession.getActiveQuestion() != null) {
             throw new EntityExistsException("Quiz session with user id "+ userProfile.getId() + " already has an active question");
         }
+        if (quizSession.getNumQuestions() == quizSession.getQuestions().size()) {
+            throw new
+        }
         Set<UUID> questionIds = userProfile.getQuizSession()
                 .getQuiz()
                 .getQuizCategory()
@@ -35,13 +38,15 @@ public class QuizQuestionService {
                 .stream()
                 .map(BaseEntity::getId)
                 .collect(Collectors.toSet());
+        Set<UUID> usedQuestions = userProfile.getQuizSession()
+                .getQuestions()
+                .stream()
+                .map(BaseEntity::getId)
+                .collect(Collectors.toSet());
         List<QuizQuestion> eligibleQuestions = quizQuestionRepository.findQuizQuestionsByCategory(quizSession.getQuiz().getQuizCategory())
                 .stream()
-                .filter(qq -> questionIds.contains(qq.getId()))
+                .filter(qq -> questionIds.contains(qq.getId()) && !usedQuestions.contains(qq.getId()))
                 .toList();
-        if (eligibleQuestions.isEmpty()) {
-            throw new EntityNotFoundException("No relevant questions found for the quiz with id: " + quizSession.getQuiz().getId());
-        }
         Random random = new Random();
         QuizQuestion quizQuestion = eligibleQuestions.get(random.nextInt(eligibleQuestions.size()));
         quizSessionService.setActiveQuestion(userProfile, quizQuestion);
