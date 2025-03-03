@@ -26,6 +26,13 @@ public class QuizSession extends BaseEntity {
     public QuizQuestion activeQuestion;
     public LocalDateTime timeActiveQuestionServed;
 
+    @Transient
+    public Integer numQuestions;
+
+    public Integer getNumQuestions() {
+        return Math.min(7, quiz.getQuizCategory().getQuestions().size());
+    }
+
     public QuizSession(Quiz quiz, UserProfile userProfile) {
         this.quiz = quiz;
         this.userProfile = userProfile;
