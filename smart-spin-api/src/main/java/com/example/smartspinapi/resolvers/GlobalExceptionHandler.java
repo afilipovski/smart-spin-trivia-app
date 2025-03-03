@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
                 .body(exception.getMessage());
     }
     @ExceptionHandler({EntityNotFoundException.class, TriviaEntityNotFoundException.class})
-    public ResponseEntity<Object> handleEntityNotFoundException(UserProfileNotFoundException exception) {
+    public ResponseEntity<Object> handleEntityNotFoundException(RuntimeException exception) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(exception.getMessage());

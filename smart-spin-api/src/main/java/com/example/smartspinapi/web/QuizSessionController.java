@@ -1,5 +1,7 @@
 package com.example.smartspinapi.web;
 
+import com.example.smartspinapi.model.dto.AnswerQuestionRequestDTO;
+import com.example.smartspinapi.model.dto.AnswerQuestionResponseDTO;
 import com.example.smartspinapi.model.dto.CreateQuizSessionDTO;
 import com.example.smartspinapi.model.entity.QuizSession;
 import com.example.smartspinapi.model.entity.UserProfile;
@@ -23,5 +25,10 @@ public class QuizSessionController {
             throw new IllegalArgumentException("Quiz ID cannot be null");
         }
         return quizSessionService.createQuizSession(createQuizSessionDTO.quizId, userProfile);
+    }
+
+    @PostMapping("/answer")
+    public AnswerQuestionResponseDTO answerQuestion(@RequestBody AnswerQuestionRequestDTO answerQuestionRequestDTO, @TriviaUser UserProfile userProfile) {
+        return quizSessionService.answerQuestion(userProfile, answerQuestionRequestDTO.answer);
     }
 }
