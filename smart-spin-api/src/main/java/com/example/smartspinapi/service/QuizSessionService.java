@@ -76,10 +76,8 @@ public class QuizSessionService {
     }
 
     public QuizSession endQuizSession(UserProfile userProfile) {
-        QuizSession session = userProfile.getQuizSession();
-        if (session == null) {
-            throw new EntityNotFoundException("Quiz session with user id " + userProfile.getId() + " not found");
-        }
+        QuizSession session = quizSessionRepository.findByUserProfileId(userProfile.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Quiz session with id " + userProfile.getId() + " not found"));
         quizSessionRepository.delete(session);
         return session;
     }
