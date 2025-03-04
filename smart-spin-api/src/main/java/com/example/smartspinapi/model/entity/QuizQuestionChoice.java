@@ -1,5 +1,6 @@
 package com.example.smartspinapi.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -13,7 +14,9 @@ import lombok.Setter;
 public class QuizQuestionChoice extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "question_id")
-    private QuizQuestion question;
-    private String content;
-    private Boolean correct;
+    @JsonIgnore
+    public QuizQuestion question;
+    public String content;
+    @JsonIgnore
+    public Boolean correct;
 }

@@ -7,15 +7,25 @@ services:
     container_name: db
     volumes:
       - smartspin-db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+    env_file: .env
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  api:
+    container_name: api
+    ports:
+      - "8080:8080"
+    build:
+      context: .
+    volumes:
+      - ./serviceAccountKey.json:/app/serviceAccountKey.json
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   smartspin-db:

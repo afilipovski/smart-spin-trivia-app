@@ -2,7 +2,7 @@ package com.example.smartspinapi.web;
 
 import com.example.smartspinapi.model.dto.RegisterUserProfileDTO;
 import com.example.smartspinapi.model.entity.UserProfile;
-import com.example.smartspinapi.model.exception.UserProfileAlreadyExistsException;
+import com.example.smartspinapi.model.exception.UserProfileExistsException;
 import com.example.smartspinapi.service.UserProfileService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserProfileController {
     private final UserProfileService userProfileService;
 
-    @ExceptionHandler(UserProfileAlreadyExistsException.class)
-    public ResponseEntity<String> handleUserProfileAlreadyExistsException(UserProfileAlreadyExistsException ex) {
+    @ExceptionHandler(UserProfileExistsException.class)
+    public ResponseEntity<String> handleUserProfileAlreadyExistsException(UserProfileExistsException ex) {
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(ex.getMessage());
@@ -27,7 +27,7 @@ public class UserProfileController {
                                     @RequestAttribute String email,
                                     @RequestBody RegisterUserProfileDTO registerUserProfileDTO) {
         return userProfileService.register(uid, email,
-                registerUserProfileDTO.getFullName(),
-                registerUserProfileDTO.getBirthDate());
+                registerUserProfileDTO.fullName,
+                registerUserProfileDTO.birthDate);
     }
 }

@@ -1,7 +1,7 @@
 package com.example.smartspinapi.service;
 
 import com.example.smartspinapi.model.entity.UserProfile;
-import com.example.smartspinapi.model.exception.UserProfileAlreadyExistsException;
+import com.example.smartspinapi.model.exception.UserProfileExistsException;
 import com.example.smartspinapi.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class UserProfileService {
     public UserProfile register(String id, String email, String fullName, LocalDate birthDate) {
         Optional<UserProfile> existingProfile = userProfileRepository.getUserProfileById(id);
         if (existingProfile.isPresent()) {
-            throw new UserProfileAlreadyExistsException(id);
+            throw new UserProfileExistsException(id);
         }
         UserProfile profile = new UserProfile(id, email, fullName, birthDate);
         return userProfileRepository.save(profile);
