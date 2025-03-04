@@ -1,5 +1,6 @@
 package com.example.smartspinapi.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
@@ -29,6 +30,7 @@ public class UserProfile {
     public ZonedDateTime streakLastExtended;
 
     @OneToOne(mappedBy = "userProfile")
+    @JsonIgnore
     private QuizSession quizSession;
 
     public UserProfile(String id, String email, String fullName, LocalDate birthDate) {

@@ -31,4 +31,9 @@ public class QuizSessionController {
     public AnswerQuestionResponseDTO answerQuestion(@RequestBody AnswerQuestionRequestDTO answerQuestionRequestDTO, @TriviaUser UserProfile userProfile) {
         return quizSessionService.answerQuestion(userProfile, answerQuestionRequestDTO.answer);
     }
+
+    @PostMapping("/end")
+    public QuizSession endQuizSession(@TriviaUser UserProfile userProfile) {
+        return quizSessionService.endQuizSession(userProfile);
+    }
 }
