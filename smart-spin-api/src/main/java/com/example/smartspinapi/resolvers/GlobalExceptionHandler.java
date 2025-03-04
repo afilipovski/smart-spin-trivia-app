@@ -1,9 +1,6 @@
 package com.example.smartspinapi.resolvers;
 
-import com.example.smartspinapi.model.exception.TriviaEntityExistsException;
-import com.example.smartspinapi.model.exception.TriviaEntityNotFoundException;
-import com.example.smartspinapi.model.exception.UserProfileExistsException;
-import com.example.smartspinapi.model.exception.UserProfileNotFoundException;
+import com.example.smartspinapi.model.exception.*;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -37,5 +34,10 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(exception.getMessage());
     }
-    @ExceptionHandler({})
+    @ExceptionHandler({MaximumQuestionsReachedException.class})
+    public ResponseEntity<Object> handleIllegalArgumentException(MaximumQuestionsReachedException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(exception.getMessage());
+    }
 }
