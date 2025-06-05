@@ -7,17 +7,21 @@ import com.example.smartspinapi.model.entity.QuizSession;
 import com.example.smartspinapi.model.entity.UserProfile;
 import com.example.smartspinapi.resolvers.TriviaUser;
 import com.example.smartspinapi.service.QuizSessionService;
+import com.example.smartspinapi.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.ZonedDateTime;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/quiz-session")
 public class QuizSessionController {
     private final QuizSessionService quizSessionService;
+    private final UserProfileService userProfileService;
 
     @PostMapping
     public QuizSession createQuizSession(@RequestBody CreateQuizSessionDTO createQuizSessionDTO, @TriviaUser UserProfile userProfile) {
@@ -34,6 +38,9 @@ public class QuizSessionController {
 
     @PostMapping("/end")
     public QuizSession endQuizSession(@TriviaUser UserProfile userProfile) {
-        return quizSessionService.endQuizSession(userProfile);
+        var quizSession = quizSessionService.endQuizSession(userProfile);
+        var userProfileAfterStreakChanges = userProfileService.extendStreak(userProfile.getId(), ZonedDateTime.now().getZone());
+        quizSession.setUserProfile(userProfileAfterStreakChanges);
+        return quizSession;
     }
 }

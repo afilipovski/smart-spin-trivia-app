@@ -24,10 +24,12 @@ public class UserProfile {
     public String email;
     public String fullName;
     public LocalDate birthDate;
+
     @ManyToMany
     public List<UserProfile> friends;
-    public Integer streak;
-    public ZonedDateTime streakLastExtended;
+
+    public Integer streak = 0;
+    public ZonedDateTime streakLastExtended = ZonedDateTime.now();
 
     @OneToOne(mappedBy = "userProfile")
     @JsonIgnore

@@ -19,7 +19,8 @@ public class QuizSession extends BaseEntity {
     public UserProfile userProfile;
     @ManyToMany
     public List<QuizQuestion> questions;
-    public Integer xpCollected;
+
+    public Integer xpCollected = 0;
 
     public String joinCode;
     @ManyToOne
