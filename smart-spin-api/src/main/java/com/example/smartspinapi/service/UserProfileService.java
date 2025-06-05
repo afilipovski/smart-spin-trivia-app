@@ -1,5 +1,6 @@
 package com.example.smartspinapi.service;
 
+import com.example.smartspinapi.model.dto.StreakEvaluationDTO;
 import com.example.smartspinapi.model.entity.UserProfile;
 import com.example.smartspinapi.model.exception.UserProfileExistsException;
 import com.example.smartspinapi.repository.UserProfileRepository;
@@ -58,6 +59,30 @@ public class UserProfileService {
     private void reset(UserProfile profile, ZonedDateTime newTime) {
         profile.setStreak(0);
         profile.setStreakLastExtended(newTime);
+    }
+
+    public StreakEvaluationDTO getEvaluatedStreak(String id, ZoneId currentZone) {
+        UserProfile profile = userProfileRepository.getUserProfileById(id).orElseThrow();
+
+        ZonedDateTime nowInCurrentZone = ZonedDateTime.now(currentZone);
+        ZonedDateTime lastExtended = profile.getStreakLastExtended();
+
+        int evaluatedStreak = profile.getStreak();
+        boolean shouldReset = false;
+
+        if (lastExtended != null) {
+            LocalDate lastDate = lastExtended.withZoneSameInstant(currentZone).toLocalDate();
+            LocalDate currentDate = nowInCurrentZone.toLocalDate();
+
+            long daysBetween = Duration.between(lastDate.atStartOfDay(), currentDate.atStartOfDay()).toDays();
+
+            if (daysBetween > 1) {
+                evaluatedStreak = 0;
+                shouldReset = true;
+            }
+        }
+
+        return new StreakEvaluationDTO(evaluatedStreak, lastExtended, shouldReset);
     }
 
 }
