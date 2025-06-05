@@ -36,7 +36,7 @@ public class UserProfileController {
     }
 
     @GetMapping("/streak")
-    public StreakEvaluationDTO streak(@TriviaUser UserProfile userProfile) {
-        return userProfileService.getEvaluatedStreak(userProfile.getId(), ZonedDateTime.now().getZone());
+    public StreakEvaluationDTO streak(@TriviaUser UserProfile userProfile, @RequestParam ZonedDateTime userTime) {
+        return userProfileService.getEvaluatedStreak(userProfile.getId(), userTime.getZone());
     }
 }
