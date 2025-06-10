@@ -38,5 +38,5 @@ INSERT INTO quiz_session_questions (questions_id, quiz_session_id) VALUES
 
 
 -- Insert sample data into user_profile_friends
-INSERT INTO user_profile_friends (user_profile_id, friends_id) VALUES
-    ('user1', 'user2');
+INSERT INTO user_friendship (friendship_accepted, id, friendship_initiator_id, friendship_receiver_id) VALUES
+    (false, '122f9b2e-7f2e-4568-9e3e-1f82e8c0c5f7', 'user1', 'user2');
