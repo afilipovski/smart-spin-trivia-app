@@ -103,28 +103,28 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         ],
                       ),
                     ),
-                    // if (state is CategoryLoadSuccess)
-                    //   Column(
-                    //     children: state.categories.map(
-                    //       (category) {
-                    //         final GradientColor color =
-                    //             GradientColor.values[random.nextInt(
-                    //           GradientColor.values.length,
-                    //         )];
-                    //         return ColoredCard(
-                    //           isFinished: true,
-                    //           categoryName: category.name,
-                    //           color: GradientColor.values[
-                    //               random.nextInt(GradientColor.values.length)],
-                    //           onSelectTap: () {
-                    //             BlocProvider.of<CategoryBloc>(context).add(
-                    //               CategorySelected(category, color),
-                    //             );
-                    //           },
-                    //         );
-                    //       },
-                    //     ).toList(),
-                    //   )
+                    if (state is CategoryLoadSuccess)
+                      Column(
+                        children: state.categories.map(
+                          (category) {
+                            final GradientColor color =
+                                GradientColor.values[random.nextInt(
+                              GradientColor.values.length,
+                            )];
+                            return ColoredCard(
+                              isFinished: true,
+                              categoryName: category.name,
+                              color: GradientColor.values[
+                                  random.nextInt(GradientColor.values.length)],
+                              onSelectTap: () {
+                                BlocProvider.of<CategoryBloc>(context).add(
+                                  CategorySelected(category, color),
+                                );
+                              },
+                            );
+                          },
+                        ).toList(),
+                      )
                     // else if (state is CategoiesLoadFailed)
                     //   const CategoriesStateUpdatePage(
                     //     emojiToBeDisplayed: '😭',
@@ -135,51 +135,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     //     emojiToBeDisplayed: '🛸',
                     //     messageToBeDisplayed: 'Loading Categories...',
                     //   ),
-                    ColoredCard(
-                      isFinished: true,
-                      categoryName: 'Animals',
-                      color: GradientColor
-                          .values[random.nextInt(GradientColor.values.length)],
-                      onSelectTap: () {
-                        BlocProvider.of<CategoryBloc>(context).add(
-                          CategorySelected(
-                            const Category(id: '1', name: 'Animals'),
-                            GradientColor.values[
-                                random.nextInt(GradientColor.values.length)],
-                          ),
-                        );
-                      },
-                    ),
-                    ColoredCard(
-                      isFinished: true,
-                      categoryName: 'Music',
-                      color: GradientColor
-                          .values[random.nextInt(GradientColor.values.length)],
-                      onSelectTap: () {
-                        BlocProvider.of<CategoryBloc>(context).add(
-                          CategorySelected(
-                            const Category(id: '2', name: 'Music'),
-                            GradientColor.values[
-                                random.nextInt(GradientColor.values.length)],
-                          ),
-                        );
-                      },
-                    ),
-                    ColoredCard(
-                      isFinished: true,
-                      categoryName: 'Movies',
-                      color: GradientColor
-                          .values[random.nextInt(GradientColor.values.length)],
-                      onSelectTap: () {
-                        BlocProvider.of<CategoryBloc>(context).add(
-                          CategorySelected(
-                            const Category(id: '3', name: 'Movies'),
-                            GradientColor.values[
-                                random.nextInt(GradientColor.values.length)],
-                          ),
-                        );
-                      },
-                    ),
                   ],
                 ),
               ),

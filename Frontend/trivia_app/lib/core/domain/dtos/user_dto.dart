@@ -5,10 +5,10 @@ part 'user_dto.g.dart';
 
 @JsonSerializable()
 class UserDto extends Equatable {
-  final String fullname;
+  final String fullName;
   final DateTime birthDate;
 
-  const UserDto({required this.fullname, required this.birthDate});
+  const UserDto({required this.fullName, required this.birthDate});
 
   factory UserDto.fromJson(Map<String, dynamic> json) =>
       _$UserDtoFromJson(json);
@@ -16,5 +16,5 @@ class UserDto extends Equatable {
   Map<String, dynamic> toJson() => _$UserDtoToJson(this);
 
   @override
-  List<Object?> get props => [fullname, birthDate];
+  List<Object?> get props => [fullName, birthDate];
 }

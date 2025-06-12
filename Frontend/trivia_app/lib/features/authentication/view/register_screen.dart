@@ -129,12 +129,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             await widget.authService
                                 .registerWithEmail(email, password);
 
-                            final requestBody = UserDto(
-                              fullname: _fullnameController.text,
-                              birthDate: _parseBirthday(_dobController.text),
+                            await widget.userService.registerUser(
+                              fullName: _fullnameController.text,
+                              birthDate: _parseBirthday(
+                                _dobController.text,
+                              ),
                             );
-
-                            await widget.userService.registerUser(requestBody);
 
                             if (!mounted) return;
                             _navigateToLogin();
