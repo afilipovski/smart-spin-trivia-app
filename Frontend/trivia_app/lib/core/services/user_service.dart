@@ -21,16 +21,12 @@ class UserService {
     required DateTime birthDate,
   }) async {
     try {
-      final result = await _client.post(
+      await _client.post(
         "user-profile/register",
         UserDto(fullName: fullName, birthDate: birthDate),
       );
     } on Exception catch (e) {
       loggerService.logError('$e');
     }
-  }
-
-  Future<void> loginUser(Object requestBody) async {
-    await _client.post("user-profile/login", requestBody);
   }
 }

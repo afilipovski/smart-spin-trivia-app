@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:trivia_app/core/services/auth_service.dart';
+import 'package:trivia_app/core/services/service_locator.dart';
 import 'package:trivia_app/features/authentication/view/login_screen.dart';
 import 'package:trivia_app/features/category/bloc/category_bloc.dart';
 import 'package:trivia_app/features/category/bloc/category_event.dart';
@@ -10,11 +12,12 @@ import 'package:trivia_app/features/category/bloc/category_state.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/view/questions_screen.dart';
 
-import '../../../models.dart';
 import '../../user_profile/view/user_profile_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
-  const CategoryScreen({super.key});
+  CategoryScreen({super.key});
+
+  final AuthService authService = getIt<AuthService>();
 
   @override
   State<CategoryScreen> createState() => _CategoryScreenState();
@@ -41,7 +44,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
         leading: IconButton(
           icon: const Icon(Icons.logout_outlined, color: Colors.black),
           onPressed: () {
-            // call a method to logout the user
+            widget.authService.signOut();
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
