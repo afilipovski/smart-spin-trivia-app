@@ -15,7 +15,7 @@ class CategoryService {
   final HttpService _client = getIt<HttpService>();
 
   Future<List<Category>> getCategories() async {
-    final List response = await _client.get("quiz-category");
+    final List response = await _client.get("quiz-category/");
     return response
         .map((c) => CategoryDto.fromJson(c))
         .map((dto) => Category(id: dto.id, name: dto.name))
