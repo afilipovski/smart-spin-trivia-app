@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:trivia_app/core/domain/dtos/user_dto.dart';
+import 'package:trivia_app/core/services/auth_service.dart';
+import 'package:trivia_app/core/services/logger_service.dart';
+import 'package:trivia_app/core/services/service_locator.dart';
+import 'package:trivia_app/core/services/user_service.dart';
 import 'package:trivia_app/features/authentication/view/login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  RegisterScreen({
+    super.key,
+  });
+
+  final UserService userService = getIt<UserService>();
+  final AuthService authService = getIt<AuthService>();
+  final LoggerService loggerService = getIt<LoggerService>();
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -90,7 +101,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                _buildTextField('Name', _usernameController),
+                _buildTextField('Full name', _fullnameController),
                 const SizedBox(height: 20),
                 _buildTextField('Birthday', _dobController, isDatePicker: true),
                 const SizedBox(height: 20),
@@ -110,12 +121,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => const LoginScreen(),
-                            ),
-                          );
+                        onPressed: () async {
+                          try {
+                            final email = _emailController.text.trim();
+                            final password = _passwordController.text.trim();
+
+                            await widget.authService
+                                .registerWithEmail(email, password);
+
+                            final requestBody = UserDto(
+                              fullname: _fullnameController.text,
+                              birthDate: _parseBirthday(_dobController.text),
+                            );
+
+                            await widget.userService.registerUser(requestBody);
+
+                            if (!mounted) return;
+                            _navigateToLogin();
+                          } catch (e) {
+                            widget.loggerService.logError('$e');
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
@@ -142,6 +167,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  DateTime _parseBirthday(String rawText) {
+    final parts = rawText.split('/');
+    return DateTime(
+      int.parse(parts[2]),
+      int.parse(parts[1]),
+      int.parse(parts[0]),
+    );
+  }
+
+  void _navigateToLogin() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
       ),
     );
   }
@@ -194,7 +237,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _fullnameController.dispose();
     _dobController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
