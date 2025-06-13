@@ -2,6 +2,7 @@ package com.example.smartspinapi.service;
 
 import com.example.smartspinapi.model.entity.UserProfile;
 import com.example.smartspinapi.model.exception.UserProfileExistsException;
+import com.example.smartspinapi.model.exception.UserProfileNotFoundException;
 import com.example.smartspinapi.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,11 @@ public class UserProfileService {
         }
         UserProfile profile = new UserProfile(id, email, fullName, birthDate);
         return userProfileRepository.save(profile);
+    }
+
+    public UserProfile getUserProfileById(String id) {
+        return userProfileRepository
+                .getUserProfileById(id)
+                .orElseThrow(() -> new UserProfileNotFoundException(id));
     }
 }

@@ -5,11 +5,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class UserFriendship extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "friendship_initiator_id")
@@ -26,6 +28,11 @@ public class UserFriendship extends BaseEntity {
     public String friendshipReceiverId;
 
     public boolean friendshipAccepted;
+
+    public UserFriendship(UserProfile friendshipInitiator, UserProfile friendshipReceiver) {
+        this.friendshipInitiator = friendshipInitiator;
+        this.friendshipReceiver = friendshipReceiver;
+    }
 
     public boolean friendshipInvolves(UserProfile profile) {
         return friendshipInitiatorId.equals(profile.getId()) ||
