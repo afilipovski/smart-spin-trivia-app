@@ -31,6 +31,10 @@ public class UserFriendshipService {
                         .orElse(null)));
     }
 
+    public UserFriendship getFriendshipDetails(String userAId, String userBId) {
+        return getFriendship(userAId,userBId).orElseThrow(() -> new TriviaEntityNotFoundException(UserFriendship.class));
+    }
+
     public UserFriendship requestFriendship(String userAId, String userBId) {
         var friendship = getFriendship(userAId,userBId);
         if (friendship.isPresent()) {
