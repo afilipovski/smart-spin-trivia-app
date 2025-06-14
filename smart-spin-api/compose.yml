@@ -16,6 +16,7 @@ services:
 
   api:
     container_name: api
+    image: 'afilipovski/smart-spin:latest'
     ports:
       - "8080:8080"
     build:
@@ -26,6 +27,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --cleanup --interval 30 api
+
 
 volumes:
   smartspin-db:

@@ -13,6 +13,12 @@ public class FirebaseTokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
+        String contextPath = request.getRequestURI();
+        if (contextPath.contains("/swagger-ui") ||
+                contextPath.contains("/api-docs")) {
+            return true;
+        }
+
         String authorization = request.getHeader("Authorization");
 
         if (authorization == null) {
