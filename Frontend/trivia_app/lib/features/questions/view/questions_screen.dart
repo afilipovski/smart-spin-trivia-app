@@ -37,7 +37,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => const CategoryScreen(),
+                builder: (context) => CategoryScreen(),
               ),
             );
           },
