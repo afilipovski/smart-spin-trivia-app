@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:trivia_app/core/domain/dtos/user_dto.dart';
 import 'package:trivia_app/core/services/auth_service.dart';
 import 'package:trivia_app/core/services/logger_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
 import 'package:trivia_app/core/services/user_service.dart';
 import 'package:trivia_app/features/authentication/view/login_screen.dart';
+import 'package:trivia_app/features/category/view/category_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  RegisterScreen({
-    super.key,
-  });
+  RegisterScreen({super.key});
 
   final UserService userService = getIt<UserService>();
   final AuthService authService = getIt<AuthService>();
@@ -122,32 +120,57 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () async {
+                          final fullName = _fullnameController.text.trim();
+                          final birthDateRaw = _dobController.text.trim();
+                          final email = _emailController.text.trim();
+                          final password = _passwordController.text;
+                          final confirmPassword =
+                              _confirmPasswordController.text;
+
+                          String? error;
+
+                          if (fullName.length <= 5) {
+                            error =
+                                'Full name must be longer than 5 characters.';
+                          } else if (!_isValidEmail(email)) {
+                            error = 'Please enter a valid email address.';
+                          } else if (password.length <= 8) {
+                            error =
+                                'Password must be longer than 8 characters.';
+                          } else if (password != confirmPassword) {
+                            error = 'Passwords do not match.';
+                          } else if (!_isValidBirthday(birthDateRaw)) {
+                            error = 'You must be at least 12 years old.';
+                          }
+
+                          if (error != null) {
+                            _showErrorDialog(error);
+                            return;
+                          }
+
                           try {
-                            final email = _emailController.text.trim();
-                            final password = _passwordController.text.trim();
+                            final birthDate = _parseBirthday(birthDateRaw);
 
                             await widget.authService
                                 .registerWithEmail(email, password);
-
                             await widget.userService.registerUser(
-                              fullName: _fullnameController.text,
-                              birthDate: _parseBirthday(
-                                _dobController.text,
-                              ),
+                              fullName: fullName,
+                              birthDate: birthDate,
                             );
 
                             if (!mounted) return;
-                            _navigateToLogin();
+                            _navigateCategories();
                           } catch (e) {
                             widget.loggerService.logError('$e');
+                            final errorMessage =
+                                _mapFirebaseError(e.toString());
+                            _showErrorDialog(errorMessage);
                           }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
-                            vertical: 16.0,
-                            horizontal: 40.0,
-                          ),
+                              vertical: 16.0, horizontal: 40.0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
                           ),
@@ -171,29 +194,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  DateTime _parseBirthday(String rawText) {
-    final parts = rawText.split('/');
-    return DateTime(
-      int.parse(parts[2]),
-      int.parse(parts[1]),
-      int.parse(parts[0]),
-    );
-  }
-
-  void _navigateToLogin() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const LoginScreen(),
-      ),
-    );
-  }
-
-  Widget _buildTextField(String label, TextEditingController controller,
-      {bool isPassword = false,
-      bool isDatePicker = false,
-      bool isObscured = false,
-      VoidCallback? toggleVisibility}) {
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller, {
+    bool isPassword = false,
+    bool isDatePicker = false,
+    bool isObscured = false,
+    VoidCallback? toggleVisibility,
+  }) {
     return TextFormField(
       controller: controller,
       readOnly: isDatePicker,
@@ -232,6 +240,71 @@ class _RegisterScreenState extends State<RegisterScreen> {
               }
             }
           : null,
+    );
+  }
+
+  DateTime _parseBirthday(String rawText) {
+    final parts = rawText.split('/');
+    return DateTime(
+      int.parse(parts[2]),
+      int.parse(parts[1]),
+      int.parse(parts[0]),
+    );
+  }
+
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(email);
+  }
+
+  bool _isValidBirthday(String birthDate) {
+    try {
+      final parsed = _parseBirthday(birthDate);
+      final today = DateTime.now();
+      final age = today.year -
+          parsed.year -
+          (today.month < parsed.month ||
+                  (today.month == parsed.month && today.day < parsed.day)
+              ? 1
+              : 0);
+      return age >= 12;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  String _mapFirebaseError(String error) {
+    if (error.contains('email-already-in-use')) {
+      return 'This email is already in use.';
+    } else if (error.contains('invalid-email')) {
+      return 'The email address is not valid.';
+    } else if (error.contains('weak-password')) {
+      return 'The password is too weak.';
+    } else {
+      return 'Registration failed. Please try again.';
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Registration Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateCategories() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => CategoryScreen()),
     );
   }
 
