@@ -14,7 +14,7 @@ void setupLocator() {
   getIt.registerLazySingleton(() => AuthService());
   getIt.registerLazySingleton(() => LoggerService());
   getIt.registerLazySingleton(() => HttpService());
-  getIt.registerLazySingleton(() => CategoryService());
   getIt.registerLazySingleton(() => QuestionService());
+  getIt.registerLazySingleton(() => CategoryService());
   getIt.registerLazySingleton(() => ChoiceService());
 }

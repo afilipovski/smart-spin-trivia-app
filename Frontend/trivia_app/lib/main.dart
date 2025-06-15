@@ -24,11 +24,11 @@ void main() async {
         providers: [
           BlocProvider<CategoryBloc>(
             create: (BuildContext context) =>
-                CategoryBloc(context.read<CategoryService>()),
+                CategoryBloc(),
           ),
           BlocProvider<QuestionBloc>(
             create: (BuildContext context) =>
-                QuestionBloc(context.read<CategoryService>()),
+                QuestionBloc(),
           ),
         ],
         child: const MyApp(),

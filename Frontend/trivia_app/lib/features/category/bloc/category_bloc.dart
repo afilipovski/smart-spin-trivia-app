@@ -7,7 +7,7 @@ import 'package:trivia_app/features/category/bloc/category_event.dart';
 import 'package:trivia_app/features/category/bloc/category_state.dart';
 
 class CategoryBloc extends Bloc<CategoryEvent, CategoriesState> {
-  CategoryBloc(CategoryService? categoryService) : super(CategoriesInitial()) {
+  CategoryBloc() : super(CategoriesInitial()) {
     on<CategoryInitialLoad>(_onCategoryInitialLoad);
     on<CategorySelected>(_onCategorySelect);
   }
