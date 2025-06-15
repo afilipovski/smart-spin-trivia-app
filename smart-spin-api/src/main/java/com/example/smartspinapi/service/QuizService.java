@@ -7,6 +7,7 @@ import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -17,4 +18,6 @@ public class QuizService {
     public Quiz findById(UUID id) {
         return quizRepository.findById(id).orElseThrow(EntityExistsException::new);
     }
+
+    public List<Quiz> findAll() { return quizRepository.findAll(); }
 }
