@@ -16,13 +16,8 @@ class QuestionService {
   // }
 
   Future<Question> getRandomQuestion() async {
-    final response = await _client.get("quiz-question/random");
+    final response = await _client.post("quiz-question/random", "");
     return Question.fromJson(response);
-  }
-
-  Future<void> createQuizSession() async {
-    CreateQuizSessionDto createQuizSessionDto = CreateQuizSessionDto(quizId: '823d4940-9d3c-4e57-bd3a-4d1b45bcb6c6');
-    await _client.post("quiz-session", createQuizSessionDto);
   }
 
   // Future<void> putQuestion(Object requestBody) async {

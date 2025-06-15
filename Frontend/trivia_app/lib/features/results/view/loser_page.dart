@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:trivia_app/core/domain/models/category.dart';
-import 'package:trivia_app/features/category/view/category_screen.dart';
+import 'package:trivia_app/core/domain/models/quiz.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/view/questions_screen.dart';
+import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
 import 'package:trivia_app/features/results/constants/colors.dart';
 import 'package:trivia_app/features/results/constants/constants.dart';
 import 'package:trivia_app/features/results/constants/result_banner_widget.dart';
 import 'package:trivia_app/features/results/constants/results_button_widget.dart';
 
 class LoserPage extends StatefulWidget {
-  final Category category;
+  final Quiz quiz;
   final GradientColor gradientColor;
 
   const LoserPage({
     super.key,
-    required this.category,
+    required this.quiz,
     required this.gradientColor,
   });
 
@@ -96,7 +96,7 @@ class _LoserPagePageState extends State<LoserPage>
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                             builder: (context) => QuestionsScreen(
-                              // category: widget.category,
+                              quiz: widget.quiz,
                               gradientColor: widget.gradientColor,
                             ),
                           ),
@@ -108,7 +108,7 @@ class _LoserPagePageState extends State<LoserPage>
                       onPressed: () {
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                            builder: (context) => CategoryScreen(),
+                            builder: (context) => QuizScreen(),
                           ),
                         );
                       },

@@ -16,6 +16,6 @@ class QuestionChoiceTapped extends QuestionEvent {
 }
 
 class QuestionsScreenInitialized extends QuestionEvent {
-  QuestionsScreenInitialized({required this.categoryId});
-  final String categoryId;
+  QuestionsScreenInitialized({required this.quizId});
+  final String quizId;
 }

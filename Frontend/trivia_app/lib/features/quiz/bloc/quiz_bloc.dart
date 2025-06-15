@@ -21,11 +21,11 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
   ) async {
     try {
       emit(QuizLoadInProgress());
-      final categories = await quizService.getQuizzes();
-      if (categories.isEmpty) {
+      final quizzes = await quizService.getQuizzes();
+      if (quizzes.isEmpty) {
         emit(QuizLoadFailed());
       } else {
-        emit(QuizLoadSuccess(categories));
+        emit(QuizLoadSuccess(quizzes));
       }
     } on Exception catch (e) {
       loggerService.logError('$e');

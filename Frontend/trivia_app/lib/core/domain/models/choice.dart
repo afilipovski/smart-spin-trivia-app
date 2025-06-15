@@ -8,14 +8,11 @@ part 'choice.g.dart';
 class Choice extends Equatable {
   final String id;
   final String content;
-  final bool isCorrect;
-  final Question? question;
 
   const Choice(
       {required this.id,
       required this.content,
-      required this.isCorrect,
-      this.question});
+  });
 
   factory Choice.fromJson(Map<String, dynamic> json) => _$ChoiceFromJson(json);
 

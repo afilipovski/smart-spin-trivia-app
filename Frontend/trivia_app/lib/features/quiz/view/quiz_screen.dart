@@ -116,7 +116,7 @@ class _QuizScreenState extends State<QuizScreen> {
                             )];
                             return ColoredCard(
                               isFinished: true,
-                              categoryName: quiz.id,
+                              categoryName: quiz.category?.name ?? "",
                               color: GradientColor.values[
                                   random.nextInt(GradientColor.values.length)],
                               onSelectTap: () {
@@ -153,7 +153,7 @@ class _QuizScreenState extends State<QuizScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) => QuestionsScreen(
-                  // quiz: state.quiz.,
+                  quiz: state.quiz,
                   gradientColor: state.color,
                 ),
               ),

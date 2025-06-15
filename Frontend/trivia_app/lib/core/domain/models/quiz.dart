@@ -8,17 +8,15 @@ part 'quiz.g.dart';
 @JsonSerializable()
 class Quiz extends Equatable {
   final String id;
-  final String categoryId;
   final Category? category;
   final int xpPerQuestion;
-  final LimitedTimeEvent event;
+  final LimitedTimeEvent? event;
 
   const Quiz({
     required this.id,
-    required this.categoryId,
-    required this.category,
     required this.xpPerQuestion,
-    required this.event,
+    this.event,
+    this.category,
   });
 
   factory Quiz.fromJson(Map<String, dynamic> json) => _$QuizFromJson(json);

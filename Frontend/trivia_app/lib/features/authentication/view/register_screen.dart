@@ -5,7 +5,7 @@ import 'package:trivia_app/core/services/logger_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
 import 'package:trivia_app/core/services/user_service.dart';
 import 'package:trivia_app/features/authentication/view/login_screen.dart';
-import 'package:trivia_app/features/category/view/category_screen.dart';
+import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   RegisterScreen({super.key});
@@ -304,7 +304,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _navigateCategories() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => CategoryScreen()),
+      MaterialPageRoute(builder: (context) => QuizScreen()),
     );
   }
 

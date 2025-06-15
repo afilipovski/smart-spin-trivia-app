@@ -2,8 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:trivia_app/core/domain/models/choice.dart';
 import 'package:trivia_app/core/domain/models/question.dart';
-import 'package:trivia_app/core/services/category_service.dart';
 import 'package:trivia_app/core/services/question_service.dart';
+import 'package:trivia_app/core/services/quiz_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
 
 part 'question_event.dart';
@@ -16,7 +16,7 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     on<QuestionChoiceTapped>(_onQuestionChoiceTapped);
   }
 
-  final CategoryService categoryService = getIt<CategoryService>();
+  final QuizService quizService = getIt<QuizService>();
   final QuestionService questionService = getIt<QuestionService>();
 
   void _onQuestionsScreenInitialized(
@@ -26,7 +26,7 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     emit(QuestionLoadInProgress());
 
     try {
-      await questionService.createQuizSession();
+      await quizService.createQuizSession(event.quizId);
 
       final randomQuestion = await questionService.getRandomQuestion();
 

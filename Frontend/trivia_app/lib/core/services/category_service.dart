@@ -7,10 +7,6 @@ import 'package:trivia_app/models.dart';
 
 class CategoryService {
   CategoryService();
-      // [HttpService? client]
-      // ) {
-    // _client = client ?? HttpService();
-  
 
   final HttpService _client = getIt<HttpService>();
 

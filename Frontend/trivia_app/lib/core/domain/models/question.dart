@@ -10,8 +10,6 @@ class Question extends Equatable {
   final String id;
   final String content;
   final List<Choice>? choices;
-  final String categoryId;
-  final Category? category;
 
   factory Question.fromJson(Map<String, dynamic> json) =>
       _$QuestionFromJson(json);
@@ -19,8 +17,6 @@ class Question extends Equatable {
   const Question({
     required this.id,
     required this.content,
-    required this.categoryId,
-    required this.category,
     required this.choices,
   });
 

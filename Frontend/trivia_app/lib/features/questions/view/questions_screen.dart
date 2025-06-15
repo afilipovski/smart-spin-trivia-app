@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_app/core/domain/models/category.dart';
-import 'package:trivia_app/features/category/view/category_screen.dart';
+import 'package:trivia_app/core/domain/models/quiz.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/bloc/question_bloc.dart';
+import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
 import 'package:trivia_app/features/results/view/loser_page.dart';
 import 'package:trivia_app/features/results/view/winner_page.dart';
 
 class QuestionsScreen extends StatefulWidget {
   const QuestionsScreen({
     super.key,
-    // required this.category,
+    required this.quiz,
     required this.gradientColor,
   });
 
-  // final Category category;
+  final Quiz quiz;
   final GradientColor gradientColor;
 
   @override
@@ -28,9 +28,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   @override
   void initState() {
     super.initState();
-    // context.read<QuestionBloc>().add(
-      // QuestionsScreenInitialized(categoryId: widget.category.id),
-    // );
+    context.read<QuestionBloc>().add(
+      QuestionsScreenInitialized(quizId: widget.quiz.id),
+    );
   }
 
   @override
@@ -45,7 +45,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => CategoryScreen(),
+                builder: (context) => QuizScreen(),
               ),
             );
           },
@@ -100,7 +100,6 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                             onTap: () {
                               setState(() {
                                 selectedTileIndex = index;
-                                hasWon = choice.isCorrect;
                               });
 
                               context.read<QuestionBloc>().add(
@@ -169,7 +168,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                     return hasWon
                                         ? const WinnerPage()
                                         : LoserPage(
-                                            category: Category(id: 'something', name: ''),
+                                            quiz: widget.quiz,
                                             gradientColor: widget.gradientColor,
                                           );
                                   },

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:trivia_app/features/category/view/category_screen.dart';
+import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
 
 class PickCategoryPage extends StatelessWidget {
   const PickCategoryPage({super.key});
@@ -41,7 +41,7 @@ class PickCategoryPage extends StatelessWidget {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CategoryScreen(),
+                      builder: (context) => QuizScreen(),
                     ),
                   );
                 },

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:trivia_app/features/category/view/category_screen.dart';
+import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
 import 'package:trivia_app/features/results/constants/colors.dart';
 import 'package:trivia_app/features/results/constants/constants.dart';
 import 'package:trivia_app/features/results/constants/result_banner_widget.dart';
@@ -84,7 +84,7 @@ class _AnimationControlPageState extends State<WinnerPage>
                         onPressed: () {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                              builder: (context) => CategoryScreen(),
+                              builder: (context) => QuizScreen(),
                             ),
                           );
                         },
