@@ -13,4 +13,5 @@ public class Quiz extends BaseEntity {
     public Integer xpPerQuestion;
     @OneToOne
     public LimitedTimeEvent event;
+    public Integer numQuestions;
 }

@@ -174,3 +174,6 @@
        add constraint FKmokc5dhh7cc3qxl9pwh7ht48v 
        foreign key (friendship_receiver_id) 
        references user_profile;
+
+    alter table quiz
+        add num_questions integer;

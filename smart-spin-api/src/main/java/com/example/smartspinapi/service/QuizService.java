@@ -6,6 +6,7 @@ import com.example.smartspinapi.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -16,4 +17,6 @@ public class QuizService {
     public Quiz findById(UUID id) {
         return quizRepository.findById(id).orElseThrow(() -> new TriviaEntityNotFoundException(Quiz.class, id));
     }
+
+    public List<Quiz> findAll() { return quizRepository.findAll(); }
 }

@@ -69,6 +69,9 @@ public class QuizSessionService {
             response.xpGain = 0;
         }
 
+        int currentXp = session.getXpCollected();
+        session.setXpCollected(currentXp + response.xpGain);
+
         session.setActiveQuestion(null);
         quizSessionRepository.save(session);
 
