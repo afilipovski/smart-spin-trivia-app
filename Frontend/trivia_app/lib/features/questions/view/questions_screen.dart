@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trivia_app/core/domain/models/choice.dart';
 import 'package:trivia_app/core/domain/models/quiz.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/bloc/question_bloc.dart';
@@ -7,8 +8,9 @@ import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
 import 'package:trivia_app/features/results/view/loser_page.dart';
 import 'package:trivia_app/features/results/view/winner_page.dart';
 
+// ignore: must_be_immutable
 class QuestionsScreen extends StatefulWidget {
-  const QuestionsScreen({
+  QuestionsScreen({
     super.key,
     required this.quiz,
     required this.gradientColor,
@@ -16,6 +18,7 @@ class QuestionsScreen extends StatefulWidget {
 
   final Quiz quiz;
   final GradientColor gradientColor;
+  Choice? selectedChoice;
 
   @override
   State<QuestionsScreen> createState() => _QuestionsScreenState();
@@ -29,8 +32,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   void initState() {
     super.initState();
     context.read<QuestionBloc>().add(
-      QuestionsScreenInitialized(quizId: widget.quiz.id),
-    );
+          QuestionsScreenInitialized(quizId: widget.quiz.id),
+        );
   }
 
   @override
@@ -59,6 +62,25 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
 
           if (state is QuestionLoadFailed) {
             return const Center(child: Text("Failed to load questions"));
+          }
+
+          if (state is QuestionAnswersFinished) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return hasPassed
+                          ? const WinnerPage()
+                          : LoserPage(
+                              quiz: widget.quiz,
+                              gradientColor: widget.gradientColor,
+                            );
+                    },
+                  ),
+                );
+              },
+            );
           }
 
           if (state is QuestionAnswering) {
@@ -102,9 +124,11 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                 selectedTileIndex = index;
                               });
 
+                              widget.selectedChoice = choice;
+
                               context.read<QuestionBloc>().add(
-                                QuestionChoiceTapped(choice: choice),
-                              );
+                                    QuestionChoiceTapped(choice: choice),
+                                  );
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(
@@ -160,20 +184,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              context.read<QuestionBloc>().add(QuestionNextTapped());
-
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return hasPassed
-                                        ? const WinnerPage()
-                                        : LoserPage(
-                                            quiz: widget.quiz,
-                                            gradientColor: widget.gradientColor,
-                                          );
-                                  },
-                                ),
-                              );
+                              context.read<QuestionBloc>().add(
+                                  QuestionNextTapped(
+                                      choice: widget.selectedChoice!));
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
@@ -203,7 +216,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
             );
           }
 
-          return const SizedBox.shrink(); // fallback
+          return const SizedBox.shrink();
         },
       ),
     );

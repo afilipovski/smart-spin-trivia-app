@@ -50,15 +50,18 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     if (currentState is! QuestionAnswering) return;
 
     if (currentState.currentQuestionIndex >= currentState.totalQuestions) {
-      // TODO: take the xpCollected from current session
-      emit(QuestionAnswersFinished(hasPassed: true)); 
-      await quizService.endQuiz();
+      final session = await quizService.endQuiz();
+      emit(QuestionAnswersFinished(xpCollected: session.xpCollected)); 
       return;
     }
 
     try {
-      final nextQuestion = await questionService.getRandomQuestion();
+      if(event.choice != null){
+        final answeredQuestion = await quizService.answerQuestion(event.choice!.content);
+      }
 
+      final nextQuestion = await questionService.getRandomQuestion();
+      
       emit(QuestionAnswering(
         question: nextQuestion,
         choicesMap: currentState.choicesMap,
@@ -73,7 +76,8 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
   void _onQuestionChoiceTapped(
     QuestionChoiceTapped event,
     Emitter<QuestionState> emit,
-  ) {
+  ) async
+   {
     final currentState = state;
     if (currentState is! QuestionAnswering) return;
 

@@ -1,3 +1,5 @@
+import 'package:trivia_app/core/domain/dtos/answer_question_request_dto.dart';
+import 'package:trivia_app/core/domain/dtos/answer_question_response_dto.dart';
 import 'package:trivia_app/core/domain/dtos/create_quiz_session_dto.dart';
 import 'package:trivia_app/core/domain/dtos/quiz_dto.dart';
 import 'package:trivia_app/core/domain/models/quiz.dart';
@@ -13,7 +15,6 @@ class QuizService {
   Future<QuizSession> createQuizSession(String quizId) async {
     final createQuizSessionDto = CreateQuizSessionDto(quizId: quizId);
     final response = await _client.post("quiz-session", createQuizSessionDto);
-    print(response);
     return QuizSession.fromJson(response);
   }
 
@@ -33,9 +34,17 @@ class QuizService {
         .toList();
   }
 
-  Future<void> endQuiz() async {
+  Future<AnswerQuestionResponseDto> answerQuestion(String answer) async {
+    final dto = AnswerQuestionRequestDto(answer: answer);
+    final result = await _client.post("quiz-session/answer", dto);
+
+    return AnswerQuestionResponseDto.fromJson(result);
+  }
+
+  Future<QuizSession> endQuiz() async {
     final time = DateTime.now().toUtc().toIso8601String();
-    await _client.post("quiz-session/end?userTime=$time", "");
+    final response = await _client.post("quiz-session/end?userTime=$time", "");
+    return QuizSession.fromJson(response);
   }
 
 }
