@@ -10,26 +10,24 @@ part 'quiz_session.g.dart';
 class QuizSession extends Equatable {
   final String id;
   final Quiz quiz;
-  final String userProfileId;
   final UserProfile? userProfile;
   final List<Question>? questions;
   final int xpCollected;
-  final String joinCode;
-  final String activeQuestionId;
+  final String? joinCode;
   final Question? activeQuestion;
-  final DateTime timeActiveQuestionServed;
+  final DateTime? timeActiveQuestionServed;
+  final int numQuestions;
 
   const QuizSession(
     this.userProfile,
     this.activeQuestion, {
     required this.id,
     required this.quiz,
-    required this.userProfileId,
     required this.questions,
     required this.xpCollected,
     required this.joinCode,
-    required this.activeQuestionId,
     required this.timeActiveQuestionServed,
+    required this.numQuestions,
   });
 
   factory QuizSession.fromJson(Map<String, dynamic> json) =>

@@ -26,13 +26,16 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     emit(QuestionLoadInProgress());
 
     try {
-      await quizService.createQuizSession(event.quizId);
+      final session = await quizService.createQuizSession(event.quizId);
+      final totalQuestions = session.numQuestions;
 
       final randomQuestion = await questionService.getRandomQuestion();
 
       emit(QuestionAnswering(
         question: randomQuestion,
         choicesMap: const <Question, Choice>{},
+        currentQuestionIndex: 1, 
+        totalQuestions: totalQuestions,
       ));
     } catch (e) {
       emit(QuestionLoadFailed());
@@ -43,45 +46,45 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     QuestionNextTapped event,
     Emitter<QuestionState> emit,
   ) async {
-    if (state is! QuestionAnswering) return;
+    final currentState = state;
+    if (currentState is! QuestionAnswering) return;
 
-    final questionLoadedState = state as QuestionAnswering;
+    if (currentState.currentQuestionIndex >= currentState.totalQuestions) {
+      // TODO: take the xpCollected from current session
+      emit(QuestionAnswersFinished(hasPassed: true)); 
+      await quizService.endQuiz();
+      return;
+    }
 
-    // Decide whether to continue or finish quiz (here we just finish after 1 question for example)
-    final hasPassed = true;
-
-    // If quiz is over:
-    emit(QuestionAnswersFinished(hasPassed: hasPassed));
-    // Otherwise, remove the above emit and return, and load next question below.
-
-    /*
     try {
-      final randomQuestion = await questionService.getRandomQuestion();
+      final nextQuestion = await questionService.getRandomQuestion();
 
       emit(QuestionAnswering(
-        question: randomQuestion,
-        choicesMap: questionLoadedState.choicesMap,
+        question: nextQuestion,
+        choicesMap: currentState.choicesMap,
+        currentQuestionIndex: currentState.currentQuestionIndex + 1,
+        totalQuestions: currentState.totalQuestions,
       ));
     } catch (e) {
-      emit(QuestionLoadFailure(error: e.toString()));
+      emit(QuestionLoadFailed());
     }
-    */
   }
 
   void _onQuestionChoiceTapped(
     QuestionChoiceTapped event,
     Emitter<QuestionState> emit,
   ) {
-    if (state is! QuestionAnswering) return;
+    final currentState = state;
+    if (currentState is! QuestionAnswering) return;
 
-    final questionAnswerState = state as QuestionAnswering;
-
-    final newChoices = Map<Question, Choice>.from(questionAnswerState.choicesMap);
-    newChoices[questionAnswerState.question] = event.choice;
+    final updatedChoices = Map<Question, Choice>.from(currentState.choicesMap);
+    updatedChoices[currentState.question] = event.choice;
 
     emit(QuestionAnswering(
-      question: questionAnswerState.question,
-      choicesMap: newChoices,
+      question: currentState.question,
+      choicesMap: updatedChoices,
+      currentQuestionIndex: currentState.currentQuestionIndex,
+      totalQuestions: currentState.totalQuestions,
     ));
   }
 }

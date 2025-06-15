@@ -15,6 +15,7 @@ QuizDto _$QuizDtoFromJson(Map<String, dynamic> json) => QuizDto(
           ? null
           : Category.fromJson(json['quizCategory'] as Map<String, dynamic>),
       id: json['id'] as String,
+      numQuestions: (json['numQuestions'] as num).toInt(),
     );
 
 Map<String, dynamic> _$QuizDtoToJson(QuizDto instance) => <String, dynamic>{
@@ -22,4 +23,5 @@ Map<String, dynamic> _$QuizDtoToJson(QuizDto instance) => <String, dynamic>{
       'xpPerQuestion': instance.xpPerQuestion,
       'quizCategory': instance.quizCategory,
       'event': instance.event,
+      'numQuestions': instance.numQuestions,
     };

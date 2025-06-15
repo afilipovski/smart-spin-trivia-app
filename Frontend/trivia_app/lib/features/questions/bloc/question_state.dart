@@ -11,14 +11,18 @@ final class QuestionAnswering extends QuestionState {
   QuestionAnswering({
     required this.question,
     required this.choicesMap,
+    required this.currentQuestionIndex,
+    required this.totalQuestions,
   });
 
   final Question question;
   final Map<Question, Choice> choicesMap;
+  final int currentQuestionIndex;
+  final int totalQuestions;
 
   @override
   List<Object?> get props =>
-      [question.id, choicesMap];
+      [question.id, choicesMap, currentQuestionIndex, totalQuestions];
 }
 
 class QuestionAnswersFinished extends QuestionState {

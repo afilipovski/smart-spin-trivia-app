@@ -9,6 +9,7 @@ part of 'quiz.dart';
 Quiz _$QuizFromJson(Map<String, dynamic> json) => Quiz(
       id: json['id'] as String,
       xpPerQuestion: (json['xpPerQuestion'] as num).toInt(),
+      numQuestions: (json['numQuestions'] as num).toInt(),
       event: json['event'] == null
           ? null
           : LimitedTimeEvent.fromJson(json['event'] as Map<String, dynamic>),
@@ -22,4 +23,5 @@ Map<String, dynamic> _$QuizToJson(Quiz instance) => <String, dynamic>{
       'category': instance.category,
       'xpPerQuestion': instance.xpPerQuestion,
       'event': instance.event,
+      'numQuestions': instance.numQuestions,
     };

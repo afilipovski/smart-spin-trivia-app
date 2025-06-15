@@ -11,10 +11,12 @@ class Quiz extends Equatable {
   final Category? category;
   final int xpPerQuestion;
   final LimitedTimeEvent? event;
+  final int numQuestions;
 
   const Quiz({
     required this.id,
     required this.xpPerQuestion,
+    required this.numQuestions,
     this.event,
     this.category,
   });

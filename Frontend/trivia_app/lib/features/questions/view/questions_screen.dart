@@ -23,7 +23,7 @@ class QuestionsScreen extends StatefulWidget {
 
 class _QuestionsScreenState extends State<QuestionsScreen> {
   int selectedTileIndex = -1;
-  bool hasWon = false;
+  bool hasPassed = true;
 
   @override
   void initState() {
@@ -165,7 +165,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return hasWon
+                                    return hasPassed
                                         ? const WinnerPage()
                                         : LoserPage(
                                             quiz: widget.quiz,

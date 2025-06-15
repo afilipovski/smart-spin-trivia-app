@@ -11,9 +11,9 @@ class QuizDto extends Equatable {
   final int xpPerQuestion;
   final Category? quizCategory;
   final LimitedTimeEvent? event;
+  final int numQuestions;
 
-
-  const QuizDto(this.xpPerQuestion, this.event, this.quizCategory, {required this.id,});
+  const QuizDto(this.xpPerQuestion, this.event, this.quizCategory, {required this.id, required this.numQuestions,});
 
   factory QuizDto.fromJson(Map<String, dynamic> json) =>
       _$QuizDtoFromJson(json);

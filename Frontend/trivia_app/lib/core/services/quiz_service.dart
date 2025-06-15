@@ -1,6 +1,7 @@
 import 'package:trivia_app/core/domain/dtos/create_quiz_session_dto.dart';
 import 'package:trivia_app/core/domain/dtos/quiz_dto.dart';
 import 'package:trivia_app/core/domain/models/quiz.dart';
+import 'package:trivia_app/core/domain/models/quiz_session.dart';
 import 'package:trivia_app/core/services/http_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
 
@@ -9,9 +10,11 @@ class QuizService {
 
   final HttpService _client = getIt<HttpService>();
 
-  Future<void> createQuizSession(String quizId) async {
+  Future<QuizSession> createQuizSession(String quizId) async {
     final createQuizSessionDto = CreateQuizSessionDto(quizId: quizId);
-    await _client.post("quiz-session", createQuizSessionDto);
+    final response = await _client.post("quiz-session", createQuizSessionDto);
+    print(response);
+    return QuizSession.fromJson(response);
   }
 
   Future<List<Quiz>> getQuizzes() async {
@@ -24,8 +27,15 @@ class QuizService {
             xpPerQuestion: dto.xpPerQuestion,
             event: dto.event,
             category: dto.quizCategory,
+            numQuestions: dto.numQuestions,
           ),
         )
         .toList();
   }
+
+  Future<void> endQuiz() async {
+    final time = DateTime.now().toUtc().toIso8601String();
+    await _client.post("quiz-session/end?userTime=$time", "");
+  }
+
 }
