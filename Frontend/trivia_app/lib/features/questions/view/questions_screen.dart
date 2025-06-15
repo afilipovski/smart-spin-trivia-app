@@ -10,11 +10,11 @@ import 'package:trivia_app/features/results/view/winner_page.dart';
 class QuestionsScreen extends StatefulWidget {
   const QuestionsScreen({
     super.key,
-    required this.category,
+    // required this.category,
     required this.gradientColor,
   });
 
-  final Category category;
+  // final Category category;
   final GradientColor gradientColor;
 
   @override
@@ -28,9 +28,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<QuestionBloc>().add(
-      QuestionsScreenInitialized(categoryId: widget.category.id),
-    );
+    // context.read<QuestionBloc>().add(
+      // QuestionsScreenInitialized(categoryId: widget.category.id),
+    // );
   }
 
   @override
@@ -169,7 +169,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                     return hasWon
                                         ? const WinnerPage()
                                         : LoserPage(
-                                            category: widget.category,
+                                            category: Category(id: 'something', name: ''),
                                             gradientColor: widget.gradientColor,
                                           );
                                   },

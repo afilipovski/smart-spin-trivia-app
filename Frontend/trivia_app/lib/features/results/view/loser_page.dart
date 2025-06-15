@@ -96,7 +96,7 @@ class _LoserPagePageState extends State<LoserPage>
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                             builder: (context) => QuestionsScreen(
-                              category: widget.category,
+                              // category: widget.category,
                               gradientColor: widget.gradientColor,
                             ),
                           ),

@@ -6,30 +6,30 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:trivia_app/core/services/auth_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
 import 'package:trivia_app/features/authentication/view/login_screen.dart';
-import 'package:trivia_app/features/category/bloc/category_bloc.dart';
-import 'package:trivia_app/features/category/bloc/category_event.dart';
-import 'package:trivia_app/features/category/bloc/category_state.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/view/questions_screen.dart';
+import 'package:trivia_app/features/quiz/bloc/quiz_bloc.dart';
+import 'package:trivia_app/features/quiz/bloc/quiz_event.dart';
+import 'package:trivia_app/features/quiz/bloc/quiz_state.dart';
 
 import '../../user_profile/view/user_profile_screen.dart';
 
-class CategoryScreen extends StatefulWidget {
-  CategoryScreen({super.key});
+class QuizScreen extends StatefulWidget {
+  QuizScreen({super.key});
 
   final AuthService authService = getIt<AuthService>();
 
   @override
-  State<CategoryScreen> createState() => _CategoryScreenState();
+  State<QuizScreen> createState() => _QuizScreenState();
 }
 
-class _CategoryScreenState extends State<CategoryScreen> {
+class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
 
-    BlocProvider.of<CategoryBloc>(context).add(
-      CategoryInitialLoad(),
+    BlocProvider.of<QuizBloc>(context).add(
+      QuizInitialLoad(),
     );
   }
 
@@ -77,9 +77,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
           ),
         ],
       ),
-      body: BlocConsumer<CategoryBloc, CategoriesState>(
-        buildWhen: (previous, current) => previous is! CategoryLoadSuccess,
-        builder: (BuildContext context, CategoriesState state) {
+      body: BlocConsumer<QuizBloc, QuizState>(
+        buildWhen: (previous, current) => previous is! QuizLoadSuccess,
+        builder: (BuildContext context, QuizState state) {
           return SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -106,35 +106,35 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         ],
                       ),
                     ),
-                    if (state is CategoryLoadSuccess)
+                    if (state is QuizLoadSuccess)
                       Column(
-                        children: state.categories.map(
-                          (category) {
+                        children: state.quizzes.map(
+                          (quiz) {
                             final GradientColor color =
                                 GradientColor.values[random.nextInt(
                               GradientColor.values.length,
                             )];
                             return ColoredCard(
                               isFinished: true,
-                              categoryName: category.name,
+                              categoryName: quiz.id,
                               color: GradientColor.values[
                                   random.nextInt(GradientColor.values.length)],
                               onSelectTap: () {
-                                BlocProvider.of<CategoryBloc>(context).add(
-                                  CategorySelected(category, color),
+                                BlocProvider.of<QuizBloc>(context).add(
+                                  QuizSelected(quiz, color),
                                 );
                               },
                             );
                           },
                         ).toList(),
                       )
-                    // else if (state is CategoiesLoadFailed)
-                    //   const CategoriesStateUpdatePage(
+                    // else if (state is QuizLoadFailed)
+                    //   const QuizStateUpdatePage(
                     //     emojiToBeDisplayed: '😭',
                     //     messageToBeDisplayed: 'Something went wrong!',
                     //   )
-                    // else if (state is CategoriesLoadInProgress)
-                    //   const CategoriesStateUpdatePage(
+                    // else if (state is QuizLoadInProgress)
+                    //   const QuizStateUpdatePage(
                     //     emojiToBeDisplayed: '🛸',
                     //     messageToBeDisplayed: 'Loading Categories...',
                     //   ),
@@ -144,16 +144,16 @@ class _CategoryScreenState extends State<CategoryScreen> {
             ),
           );
         },
-        listener: (BuildContext context, CategoriesState state) {
-          if (state is CategoriesCardSelected) {
-            BlocProvider.of<CategoryBloc>(context).add(
-              CategorySelected(state.category, state.color),
+        listener: (BuildContext context, QuizState state) {
+          if (state is QuizCardSelected) {
+            BlocProvider.of<QuizBloc>(context).add(
+              QuizSelected(state.quiz, state.color),
             );
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => QuestionsScreen(
-                  // category: state.category,
+                  // quiz: state.quiz.,
                   gradientColor: state.color,
                 ),
               ),
