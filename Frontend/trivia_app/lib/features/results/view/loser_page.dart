@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:trivia_app/core/domain/models/quiz.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
+import 'package:trivia_app/features/questions/bloc/question_bloc.dart';
 import 'package:trivia_app/features/questions/view/questions_screen.dart';
 import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
 import 'package:trivia_app/features/results/constants/colors.dart';
@@ -93,11 +95,15 @@ class _LoserPagePageState extends State<LoserPage>
                     ResultsButtonWidget(
                       text: 'Try again',
                       onPressed: () {
-                        Navigator.of(context).pushReplacement(
+                        Navigator.push(
+                          context,
                           MaterialPageRoute(
-                            builder: (context) => QuestionsScreen(
-                              quiz: widget.quiz,
-                              gradientColor: widget.gradientColor,
+                            builder: (_) => BlocProvider(
+                              create: (_) => QuestionBloc(),
+                              child: QuestionsScreen(
+                                quiz: widget.quiz,
+                                gradientColor:  widget.gradientColor,
+                              ),
                             ),
                           ),
                         );

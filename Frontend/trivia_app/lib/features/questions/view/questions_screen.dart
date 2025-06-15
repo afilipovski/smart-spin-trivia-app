@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_app/core/domain/models/choice.dart';
 import 'package:trivia_app/core/domain/models/quiz.dart';
+import 'package:trivia_app/core/services/quiz_service.dart';
+import 'package:trivia_app/core/services/service_locator.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/bloc/question_bloc.dart';
 import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
@@ -28,12 +30,46 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   int selectedTileIndex = -1;
   bool hasPassed = true;
 
+  final quizService = getIt<QuizService>();
+
   @override
   void initState() {
     super.initState();
     context.read<QuestionBloc>().add(
           QuestionsScreenInitialized(quizId: widget.quiz.id),
         );
+  }
+
+  void _navigateToResultsPage() {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) async {
+        await quizService.endQuiz();
+        if (!mounted) return;
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => hasPassed
+                ? const WinnerPage()
+                : LoserPage(
+                    quiz: widget.quiz,
+                    gradientColor: widget.gradientColor,
+                  ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _handleBackPressed() async {
+    await quizService.endQuiz();
+
+    if (!mounted) return;
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => QuizScreen(),
+      ),
+    );
   }
 
   @override
@@ -44,13 +80,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => QuizScreen(),
-              ),
-            );
+          onPressed: () async {
+            await _handleBackPressed();
           },
         ),
       ),
@@ -65,22 +96,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           }
 
           if (state is QuestionAnswersFinished) {
-            WidgetsBinding.instance.addPostFrameCallback(
-              (_) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return hasPassed
-                          ? const WinnerPage()
-                          : LoserPage(
-                              quiz: widget.quiz,
-                              gradientColor: widget.gradientColor,
-                            );
-                    },
-                  ),
-                );
-              },
-            );
+            _navigateToResultsPage();
           }
 
           if (state is QuestionAnswering) {

@@ -49,17 +49,16 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     final currentState = state;
     if (currentState is! QuestionAnswering) return;
 
+    if(event.choice != null){
+      await quizService.answerQuestion(event.choice!.content);
+    }
+
     if (currentState.currentQuestionIndex >= currentState.totalQuestions) {
-      final session = await quizService.endQuiz();
-      emit(QuestionAnswersFinished(xpCollected: session.xpCollected)); 
+      emit(QuestionAnswersFinished()); 
       return;
     }
 
     try {
-      if(event.choice != null){
-        final answeredQuestion = await quizService.answerQuestion(event.choice!.content);
-      }
-
       final nextQuestion = await questionService.getRandomQuestion();
       
       emit(QuestionAnswering(

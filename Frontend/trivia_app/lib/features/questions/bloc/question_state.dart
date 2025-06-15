@@ -26,12 +26,10 @@ final class QuestionAnswering extends QuestionState {
 }
 
 class QuestionAnswersFinished extends QuestionState {
-  QuestionAnswersFinished({required this.xpCollected});
-
-  final int xpCollected;
+  QuestionAnswersFinished();
 
   @override
-  List<Object?> get props => [xpCollected];
+  List<Object?> get props => [];
 }
 
 final class QuestionLoadFailed extends QuestionState {}
