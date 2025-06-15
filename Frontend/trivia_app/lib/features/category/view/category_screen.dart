@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:trivia_app/core/services/auth_service.dart';
+import 'package:trivia_app/core/services/service_locator.dart';
 import 'package:trivia_app/features/authentication/view/login_screen.dart';
 import 'package:trivia_app/features/category/bloc/category_bloc.dart';
 import 'package:trivia_app/features/category/bloc/category_event.dart';
@@ -10,11 +12,12 @@ import 'package:trivia_app/features/category/bloc/category_state.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/view/questions_screen.dart';
 
-import '../../../models.dart';
 import '../../user_profile/view/user_profile_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
-  const CategoryScreen({super.key});
+  CategoryScreen({super.key});
+
+  final AuthService authService = getIt<AuthService>();
 
   @override
   State<CategoryScreen> createState() => _CategoryScreenState();
@@ -41,7 +44,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
         leading: IconButton(
           icon: const Icon(Icons.logout_outlined, color: Colors.black),
           onPressed: () {
-            // call a method to logout the user
+            widget.authService.signOut();
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -103,28 +106,28 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         ],
                       ),
                     ),
-                    // if (state is CategoryLoadSuccess)
-                    //   Column(
-                    //     children: state.categories.map(
-                    //       (category) {
-                    //         final GradientColor color =
-                    //             GradientColor.values[random.nextInt(
-                    //           GradientColor.values.length,
-                    //         )];
-                    //         return ColoredCard(
-                    //           isFinished: true,
-                    //           categoryName: category.name,
-                    //           color: GradientColor.values[
-                    //               random.nextInt(GradientColor.values.length)],
-                    //           onSelectTap: () {
-                    //             BlocProvider.of<CategoryBloc>(context).add(
-                    //               CategorySelected(category, color),
-                    //             );
-                    //           },
-                    //         );
-                    //       },
-                    //     ).toList(),
-                    //   )
+                    if (state is CategoryLoadSuccess)
+                      Column(
+                        children: state.categories.map(
+                          (category) {
+                            final GradientColor color =
+                                GradientColor.values[random.nextInt(
+                              GradientColor.values.length,
+                            )];
+                            return ColoredCard(
+                              isFinished: true,
+                              categoryName: category.name,
+                              color: GradientColor.values[
+                                  random.nextInt(GradientColor.values.length)],
+                              onSelectTap: () {
+                                BlocProvider.of<CategoryBloc>(context).add(
+                                  CategorySelected(category, color),
+                                );
+                              },
+                            );
+                          },
+                        ).toList(),
+                      )
                     // else if (state is CategoiesLoadFailed)
                     //   const CategoriesStateUpdatePage(
                     //     emojiToBeDisplayed: '😭',
@@ -135,51 +138,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     //     emojiToBeDisplayed: '🛸',
                     //     messageToBeDisplayed: 'Loading Categories...',
                     //   ),
-                    ColoredCard(
-                      isFinished: true,
-                      categoryName: 'Animals',
-                      color: GradientColor
-                          .values[random.nextInt(GradientColor.values.length)],
-                      onSelectTap: () {
-                        BlocProvider.of<CategoryBloc>(context).add(
-                          CategorySelected(
-                            const Category(id: '1', name: 'Animals'),
-                            GradientColor.values[
-                                random.nextInt(GradientColor.values.length)],
-                          ),
-                        );
-                      },
-                    ),
-                    ColoredCard(
-                      isFinished: true,
-                      categoryName: 'Music',
-                      color: GradientColor
-                          .values[random.nextInt(GradientColor.values.length)],
-                      onSelectTap: () {
-                        BlocProvider.of<CategoryBloc>(context).add(
-                          CategorySelected(
-                            const Category(id: '2', name: 'Music'),
-                            GradientColor.values[
-                                random.nextInt(GradientColor.values.length)],
-                          ),
-                        );
-                      },
-                    ),
-                    ColoredCard(
-                      isFinished: true,
-                      categoryName: 'Movies',
-                      color: GradientColor
-                          .values[random.nextInt(GradientColor.values.length)],
-                      onSelectTap: () {
-                        BlocProvider.of<CategoryBloc>(context).add(
-                          CategorySelected(
-                            const Category(id: '3', name: 'Movies'),
-                            GradientColor.values[
-                                random.nextInt(GradientColor.values.length)],
-                          ),
-                        );
-                      },
-                    ),
                   ],
                 ),
               ),

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>308117439977-hredna3g3v07vmarbddbjt9qqae7auv5.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.308117439977-hredna3g3v07vmarbddbjt9qqae7auv5</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDUiVrA-gi7R4YNKmrl2wZlRIMdCSjIjv4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>308117439977</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.smart.spin</string>
+	<key>PROJECT_ID</key>
+	<string>smart-spin-83f3e</string>
+	<key>STORAGE_BUCKET</key>
+	<string>smart-spin-83f3e.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:308117439977:ios:a2e2c9c5964e7b7c73f778</string>
+	<key>DATABASE_URL</key>
+	<string>https://smart-spin-83f3e-default-rtdb.europe-west1.firebasedatabase.app</string>
+</dict>
+</plist>

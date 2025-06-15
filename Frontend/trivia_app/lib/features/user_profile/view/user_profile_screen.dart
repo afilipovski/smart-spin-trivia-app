@@ -30,7 +30,7 @@ class ProfileScreen extends StatelessWidget {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => const CategoryScreen(),
+                builder: (context) => CategoryScreen(),
               ),
             );
           },

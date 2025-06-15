@@ -84,7 +84,7 @@ class _AnimationControlPageState extends State<WinnerPage>
                         onPressed: () {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                              builder: (context) => const CategoryScreen(),
+                              builder: (context) => CategoryScreen(),
                             ),
                           );
                         },

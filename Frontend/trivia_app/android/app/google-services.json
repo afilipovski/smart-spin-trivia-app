@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "308117439977",
+    "firebase_url": "https://smart-spin-83f3e-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "smart-spin-83f3e",
+    "storage_bucket": "smart-spin-83f3e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:308117439977:android:02e8733af41fa32073f778",
+        "android_client_info": {
+          "package_name": "com.smart.spin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "308117439977-380rqfv11tbniib2knsod2fhdgpu7gnm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.smart.spin",
+            "certificate_hash": "04cb692a89c4251ea9a588649c121a0290f1086b"
+          }
+        },
+        {
+          "client_id": "308117439977-17dto2p57dd79jat420j28gj8jugohlp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmCTp_cTWtpOFRIW-v9N0safUM_qIpCXI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "308117439977-17dto2p57dd79jat420j28gj8jugohlp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "308117439977-hredna3g3v07vmarbddbjt9qqae7auv5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.smart.spin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

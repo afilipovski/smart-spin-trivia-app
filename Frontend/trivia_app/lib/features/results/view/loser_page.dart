@@ -108,7 +108,7 @@ class _LoserPagePageState extends State<LoserPage>
                       onPressed: () {
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                            builder: (context) => const CategoryScreen(),
+                            builder: (context) => CategoryScreen(),
                           ),
                         );
                       },
