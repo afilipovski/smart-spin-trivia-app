@@ -15,7 +15,7 @@ import java.util.List;
 public class QuizCategoryController {
     private final QuizCategoryService quizCategoryService;
 
-    @GetMapping("/")
+    @GetMapping()
     public List<QuizCategory> getAll() {
         return quizCategoryService.findAll();
     }

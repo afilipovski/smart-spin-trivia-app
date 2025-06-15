@@ -5,9 +5,9 @@ INSERT INTO quiz_category (id, name) VALUES
                                          ('a1f8b2c7-4ad3-4e3e-a50c-7c1b5d8f0c9d', 'Math');
 
 -- Insert sample data into quiz
-INSERT INTO quiz (id, xp_per_question, quiz_category_id) VALUES
-                                                             ('823d4940-9d3c-4e57-bd3a-4d1b45bcb6c6', 10, 'd5e8efc0-1f83-4d9d-a7e9-1b4d5d4c0e6b'),
-                                                             ('d76e3d53-ff94-4a2e-9e85-0a2b5c6c1c8a', 15, 'bbd4e43c-92e2-4a6e-9bd7-4fd67e4b0eec');
+INSERT INTO quiz (id, xp_per_question, quiz_category_id, num_questions) VALUES
+                                                             ('823d4940-9d3c-4e57-bd3a-4d1b45bcb6c6', 10, 'd5e8efc0-1f83-4d9d-a7e9-1b4d5d4c0e6b', 5),
+                                                             ('d76e3d53-ff94-4a2e-9e85-0a2b5c6c1c8a', 15, 'bbd4e43c-92e2-4a6e-9bd7-4fd67e4b0eec', 5);
 
 -- Insert sample data into quiz_question
 INSERT INTO quiz_question (category_id, id, content) VALUES
@@ -38,5 +38,5 @@ INSERT INTO quiz_session_questions (questions_id, quiz_session_id) VALUES
 
 
 -- Insert sample data into user_profile_friends
-INSERT INTO user_profile_friends (user_profile_id, friends_id) VALUES
-    ('user1', 'user2');
+INSERT INTO user_friendship (friendship_accepted, id, friendship_initiator_id, friendship_receiver_id) VALUES
+    (false, '122f9b2e-7f2e-4568-9e3e-1f82e8c0c5f7', 'user1', 'user2');

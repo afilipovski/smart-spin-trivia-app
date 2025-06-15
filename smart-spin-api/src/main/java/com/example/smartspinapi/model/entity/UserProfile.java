@@ -25,11 +25,8 @@ public class UserProfile {
     public String fullName;
     public LocalDate birthDate;
 
-    @ManyToMany
-    public List<UserProfile> friends;
-
-    public Integer streak = 0;
-    public ZonedDateTime streakLastExtended = ZonedDateTime.now();
+    public Integer streak;
+    public ZonedDateTime streakLastExtended;
 
     @OneToOne(mappedBy = "userProfile")
     @JsonIgnore
@@ -40,7 +37,6 @@ public class UserProfile {
         this.email = email;
         this.fullName = fullName;
         this.birthDate = birthDate;
-        this.friends = new ArrayList<>();
         this.streak = 0;
         this.streakLastExtended = ZonedDateTime.now();
     }
