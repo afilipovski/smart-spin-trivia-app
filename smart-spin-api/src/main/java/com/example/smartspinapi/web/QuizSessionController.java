@@ -40,4 +40,9 @@ public class QuizSessionController {
         quizSession.setUserProfile(userProfileAfterStreakChanges);
         return quizSession;
     }
+
+    @GetMapping()
+    public QuizSession getQuizSession(@TriviaUser UserProfile userProfile) {
+        return quizSessionService.getQuizSession(userProfile);
+    }
 }
