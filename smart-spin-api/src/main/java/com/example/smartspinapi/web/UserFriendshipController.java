@@ -44,4 +44,9 @@ public class UserFriendshipController {
     public UserFriendship deleteFriendship(@TriviaUser UserProfile userProfile, @PathVariable String otherUserId) {
         return userFriendshipService.deleteFriendship(userProfile.getId(), otherUserId);
     }
+
+    @GetMapping("/mutual/{otherUserId}")
+    public List<UserProfile> listMutualFriendships(@TriviaUser UserProfile userProfile, @PathVariable String otherUserId) {
+        return userFriendshipService.getMutualFriends(userProfile.getId(), otherUserId);
+    }
 }

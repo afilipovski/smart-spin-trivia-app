@@ -8,8 +8,10 @@ import com.example.smartspinapi.repository.UserFriendshipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,4 +68,22 @@ public class UserFriendshipService {
     }
 
 
+    public List<UserProfile> getMutualFriends(String id, String otherUserId) {
+        List<UserFriendship> requesterFriendships = listFriendRequests(id);
+        List<UserFriendship> receiverFriendships = listFriendRequests(otherUserId);
+
+        var requesterFriendIds = requesterFriendships.stream()
+                .map(f -> f.getOtherProfileId(id))
+                .collect(Collectors.toSet());
+        var receiverFriendIds = receiverFriendships.stream()
+                .map(f -> f.getOtherProfileId(id))
+                .collect(Collectors.toSet());
+
+        var mutualFriendIds = new HashSet<>(requesterFriendIds);
+        mutualFriendIds.retainAll(receiverFriendIds);
+
+        return mutualFriendIds.stream()
+                .map(userProfileService::getUserProfileById)
+                .collect(Collectors.toList());
+    }
 }

@@ -34,12 +34,7 @@ public class UserFriendship extends BaseEntity {
         this.friendshipReceiver = friendshipReceiver;
     }
 
-    public boolean friendshipInvolves(UserProfile profile) {
-        return friendshipInitiatorId.equals(profile.getId()) ||
-                friendshipReceiverId.equals(profile.getId());
-    }
-
-    public UserProfile getOtherProfile(UserProfile profile) {
-        return friendshipInitiator.getId().equals(profile.getId()) ? friendshipReceiver : friendshipInitiator;
+    public String getOtherProfileId(String id) {
+        return friendshipInitiator.getId().equals(id) ? friendshipReceiverId : friendshipInitiatorId;
     }
 }
