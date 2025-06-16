@@ -69,14 +69,14 @@ public class UserFriendshipService {
 
 
     public List<UserProfile> getMutualFriends(String id, String otherUserId) {
-        List<UserFriendship> requesterFriendships = listFriendRequests(id);
-        List<UserFriendship> receiverFriendships = listFriendRequests(otherUserId);
+        List<UserFriendship> requesterFriendships = listActiveFriendships(id);
+        List<UserFriendship> receiverFriendships = listActiveFriendships(otherUserId);
 
         var requesterFriendIds = requesterFriendships.stream()
                 .map(f -> f.getOtherProfileId(id))
                 .collect(Collectors.toSet());
         var receiverFriendIds = receiverFriendships.stream()
-                .map(f -> f.getOtherProfileId(id))
+                .map(f -> f.getOtherProfileId(otherUserId))
                 .collect(Collectors.toSet());
 
         var mutualFriendIds = new HashSet<>(requesterFriendIds);
