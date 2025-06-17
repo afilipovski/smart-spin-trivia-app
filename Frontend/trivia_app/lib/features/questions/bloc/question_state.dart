@@ -9,27 +9,35 @@ final class QuestionInitial extends QuestionState {}
 
 final class QuestionAnswering extends QuestionState {
   QuestionAnswering({
-    required this.questions,
-    required this.currentQuestion,
+    required this.question,
     required this.choicesMap,
+    required this.currentQuestionIndex,
+    required this.totalQuestions,
+    this.selectedChoice,
+    this.selectedIndex,
   });
 
-  final List<Question> questions;
-  final Question currentQuestion;
+  final Question question;
   final Map<Question, Choice> choicesMap;
+  final int currentQuestionIndex;
+  final int totalQuestions;
+  final Choice? selectedChoice;
+  final int? selectedIndex;
 
   @override
   List<Object?> get props =>
-      [...questions.map((q) => q.id), currentQuestion.id, choicesMap];
+      [question.id, choicesMap, currentQuestionIndex, totalQuestions];
 }
 
 class QuestionAnswersFinished extends QuestionState {
-  QuestionAnswersFinished({required this.hasPassed});
+  QuestionAnswersFinished({
+    required this.xpCollected,
+  });
 
-  final bool hasPassed;
+  final int xpCollected;
 
   @override
-  List<Object?> get props => [hasPassed];
+  List<Object?> get props => [];
 }
 
 final class QuestionLoadFailed extends QuestionState {}

@@ -15,28 +15,27 @@ QuizSession _$QuizSessionFromJson(Map<String, dynamic> json) => QuizSession(
           : Question.fromJson(json['activeQuestion'] as Map<String, dynamic>),
       id: json['id'] as String,
       quiz: Quiz.fromJson(json['quiz'] as Map<String, dynamic>),
-      userProfileId: json['userProfileId'] as String,
       questions: (json['questions'] as List<dynamic>?)
           ?.map((e) => Question.fromJson(e as Map<String, dynamic>))
           .toList(),
       xpCollected: (json['xpCollected'] as num).toInt(),
-      joinCode: json['joinCode'] as String,
-      activeQuestionId: json['activeQuestionId'] as String,
-      timeActiveQuestionServed:
-          DateTime.parse(json['timeActiveQuestionServed'] as String),
+      joinCode: json['joinCode'] as String?,
+      timeActiveQuestionServed: json['timeActiveQuestionServed'] == null
+          ? null
+          : DateTime.parse(json['timeActiveQuestionServed'] as String),
+      numQuestions: (json['numQuestions'] as num).toInt(),
     );
 
 Map<String, dynamic> _$QuizSessionToJson(QuizSession instance) =>
     <String, dynamic>{
       'id': instance.id,
       'quiz': instance.quiz,
-      'userProfileId': instance.userProfileId,
       'userProfile': instance.userProfile,
       'questions': instance.questions,
       'xpCollected': instance.xpCollected,
       'joinCode': instance.joinCode,
-      'activeQuestionId': instance.activeQuestionId,
       'activeQuestion': instance.activeQuestion,
       'timeActiveQuestionServed':
-          instance.timeActiveQuestionServed.toIso8601String(),
+          instance.timeActiveQuestionServed?.toIso8601String(),
+      'numQuestions': instance.numQuestions,
     };

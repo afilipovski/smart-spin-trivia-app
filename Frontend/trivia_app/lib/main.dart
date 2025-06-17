@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
+import 'package:trivia_app/features/quiz/bloc/quiz_bloc.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,11 +25,15 @@ void main() async {
         providers: [
           BlocProvider<CategoryBloc>(
             create: (BuildContext context) =>
-                CategoryBloc(context.read<CategoryService>()),
+                CategoryBloc(),
           ),
           BlocProvider<QuestionBloc>(
             create: (BuildContext context) =>
-                QuestionBloc(context.read<CategoryService>()),
+                QuestionBloc(),
+          ),
+          BlocProvider<QuizBloc>(
+            create: (BuildContext context) =>
+                QuizBloc(),
           ),
         ],
         child: const MyApp(),

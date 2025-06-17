@@ -1,107 +1,110 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:trivia_app/core/domain/exceptions/http_response_exception.dart';
 import 'package:trivia_app/core/domain/models/choice.dart';
 import 'package:trivia_app/core/domain/models/question.dart';
-import 'package:trivia_app/core/services/category_service.dart';
+import 'package:trivia_app/core/services/logger_service.dart';
+import 'package:trivia_app/core/services/question_service.dart';
+import 'package:trivia_app/core/services/quiz_service.dart';
+import 'package:trivia_app/core/services/service_locator.dart';
 
 part 'question_event.dart';
 part 'question_state.dart';
 
 class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
-  QuestionBloc(
-    CategoryService? categoryService,
-  ) : super(QuestionInitial()) {
-    _categoryService = categoryService ?? CategoryService();
-
+  QuestionBloc() : super(QuestionInitial()) {
     on<QuestionsScreenInitialized>(_onQuestionsScreenInitialized);
     on<QuestionNextTapped>(_onQuestionNextTapped);
     on<QuestionChoiceTapped>(_onQuestionChoiceTapped);
   }
 
-  late final CategoryService _categoryService;
+  final QuizService quizService = getIt<QuizService>();
+  final QuestionService questionService = getIt<QuestionService>();
+  final LoggerService loggerService = getIt<LoggerService>();
 
-  void _onQuestionsScreenInitialized(
-    QuestionsScreenInitialized event,
-    Emitter<QuestionState> emit,
-  ) async {
-    emit(QuestionLoadInProgress());
+ void _onQuestionsScreenInitialized(
+  QuestionsScreenInitialized event,
+  Emitter<QuestionState> emit,
+) async {
+  emit(QuestionLoadInProgress());
 
-    final randomQuestionsForCategory =
-        await _categoryService.getRandomQuestionsForCategory(event.categoryId);
-
-    final newState = QuestionAnswering(
-      questions: randomQuestionsForCategory.toList(),
-      currentQuestion: randomQuestionsForCategory.first,
-      // ignore: prefer_const_literals_to_create_immutables
-      choicesMap: <Question, Choice>{},
-    );
-
-    emit(newState);
+  try {
+    await quizService.endQuiz(); 
+  } catch (e) {
+    if (e is HttpResponseException && e.statusCode == 404) {
+    } else {
+      loggerService.logError("Unexpected error while ending quiz: $e");
+    }
   }
+
+  try {
+    final session = await quizService.createQuizSession(event.quizId);
+    final totalQuestions = session.numQuestions;
+
+    final randomQuestion = await questionService.getRandomQuestion();
+
+    emit(QuestionAnswering(
+      question: randomQuestion,
+      choicesMap: const <Question, Choice>{},
+      currentQuestionIndex: 1,
+      totalQuestions: totalQuestions,
+    ));
+  } catch (e) {
+    emit(QuestionLoadFailed());
+  }
+}
 
   void _onQuestionNextTapped(
     QuestionNextTapped event,
     Emitter<QuestionState> emit,
-  ) {
-    if (state is! QuestionAnswering) {
+  ) async {
+    final currentState = state;
+    if (currentState is! QuestionAnswering) return;
+
+    if(event.choice != null){
+      await quizService.answerQuestion(event.choice!.content);
+    }
+
+    if (currentState.currentQuestionIndex >= currentState.totalQuestions) {
+      final session = await quizService.endQuiz();
+      emit(QuestionAnswersFinished(xpCollected: session.xpCollected)); 
       return;
     }
 
-    final questionLoadedState = state as QuestionAnswering;
-
-    final indexOfCurrentQuestion = questionLoadedState.questions
-        .indexOf(questionLoadedState.currentQuestion);
-    final isOnLastQuestion =
-        indexOfCurrentQuestion == questionLoadedState.questions.length - 1;
-
-    if (isOnLastQuestion) {
-      int countAll = questionLoadedState.questions.length;
-
-      int countCorrect = questionLoadedState.choicesMap.values
-          .where((val) => val.isCorrect)
-          .length;
-      double percentPassed = (countCorrect * 1.0) / countAll;
-      bool hasPassed = false;
-
-      if (percentPassed > 0.5) {
-        hasPassed = true;
-      }
-      emit(QuestionAnswersFinished(hasPassed: hasPassed));
-      return;
+    try {
+      final nextQuestion = await questionService.getRandomQuestion();
+      
+      emit(QuestionAnswering(
+        question: nextQuestion,
+        choicesMap: currentState.choicesMap,
+        currentQuestionIndex: currentState.currentQuestionIndex + 1,
+        totalQuestions: currentState.totalQuestions,
+      ));
+    } catch (e) {
+      emit(QuestionLoadFailed());
     }
-
-    final nextQuestion =
-        questionLoadedState.questions[indexOfCurrentQuestion + 1];
-
-    final nextState = QuestionAnswering(
-      questions: questionLoadedState.questions,
-      currentQuestion: nextQuestion,
-      choicesMap: questionLoadedState.choicesMap,
-    );
-
-    emit(nextState);
   }
 
   void _onQuestionChoiceTapped(
     QuestionChoiceTapped event,
     Emitter<QuestionState> emit,
-  ) {
-    if (state is! QuestionAnswering) {
-      return;
-    }
+  ) async
+   {
+    final currentState = state;
+    if (currentState is! QuestionAnswering) return;
 
-    final questionAnswerState = state as QuestionAnswering;
+    final updatedChoices = Map<Question, Choice>.from(currentState.choicesMap);
+    updatedChoices[currentState.question] = event.choice;
 
-    final choices = questionAnswerState.choicesMap;
+    final selectedIndex = currentState.question.choices?.indexOf(event.choice);
 
-    choices[questionAnswerState.currentQuestion] = event.choice;
-
-    final nextState = QuestionAnswering(
-      questions: questionAnswerState.questions,
-      currentQuestion: questionAnswerState.currentQuestion,
-      choicesMap: choices,
-    );
-
-    emit(nextState);
+    emit(QuestionAnswering(
+      question: currentState.question,
+      choicesMap: updatedChoices,
+      currentQuestionIndex: currentState.currentQuestionIndex,
+      totalQuestions: currentState.totalQuestions,
+      selectedChoice: event.choice,
+      selectedIndex: selectedIndex,
+    ));
   }
 }

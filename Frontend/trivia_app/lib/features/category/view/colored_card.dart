@@ -96,15 +96,6 @@ class ColoredCard extends StatelessWidget {
             Color.fromARGB(199, 238, 181, 100),
           ],
         );
-      default:
-        return const LinearGradient(
-          colors: [
-            Color.fromRGBO(235, 69, 174, 0.808),
-            Color.fromARGB(225, 230, 159, 79),
-            Color.fromARGB(223, 250, 158, 101),
-            Color.fromARGB(199, 238, 181, 100),
-          ],
-        );
     }
   }
 
@@ -151,7 +142,7 @@ class _CategoryCard extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  splashColor: Colors.grey.withOpacity(0.1),
+                  splashColor: Colors.grey.withValues(alpha: 0.1),
                   onTap: onCategorySelect,
                   borderRadius: const BorderRadius.all(
                     Radius.circular(35),

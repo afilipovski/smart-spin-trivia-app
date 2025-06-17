@@ -29,7 +29,7 @@ class TextBannerWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: fontSize,
                 fontWeight: FontWeight.bold,
-                color: baseTextColor.withOpacity(0.01 * (10 - i),),
+                color: baseTextColor.withValues(alpha: 0.01 * (10 - i),),
                 decoration: TextDecoration.none,
               ),
             ),

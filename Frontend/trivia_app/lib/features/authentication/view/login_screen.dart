@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:trivia_app/core/services/auth_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
+import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
 
-import '../../category/view/category_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => CategoryScreen(),
+          builder: (context) => QuizScreen(),
         ),
       );
     } on FirebaseAuthException catch (e) {

@@ -1,27 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'quiz.dart';
+part of 'quiz_dto.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Quiz _$QuizFromJson(Map<String, dynamic> json) => Quiz(
-      id: json['id'] as String,
-      xpPerQuestion: (json['xpPerQuestion'] as num).toInt(),
-      numQuestions: (json['numQuestions'] as num).toInt(),
-      event: json['event'] == null
+QuizDto _$QuizDtoFromJson(Map<String, dynamic> json) => QuizDto(
+      (json['xpPerQuestion'] as num).toInt(),
+      json['event'] == null
           ? null
           : LimitedTimeEvent.fromJson(json['event'] as Map<String, dynamic>),
-      category: json['category'] == null
+      json['quizCategory'] == null
           ? null
-          : Category.fromJson(json['category'] as Map<String, dynamic>),
+          : Category.fromJson(json['quizCategory'] as Map<String, dynamic>),
+      id: json['id'] as String,
+      numQuestions: (json['numQuestions'] as num).toInt(),
     );
 
-Map<String, dynamic> _$QuizToJson(Quiz instance) => <String, dynamic>{
+Map<String, dynamic> _$QuizDtoToJson(QuizDto instance) => <String, dynamic>{
       'id': instance.id,
-      'category': instance.category,
       'xpPerQuestion': instance.xpPerQuestion,
+      'quizCategory': instance.quizCategory,
       'event': instance.event,
       'numQuestions': instance.numQuestions,
     };
