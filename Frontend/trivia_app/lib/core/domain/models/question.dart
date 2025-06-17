@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:trivia_app/core/domain/models/category.dart';
 import 'package:trivia_app/core/domain/models/choice.dart';
 
 part 'question.g.dart';

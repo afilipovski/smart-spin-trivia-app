@@ -36,8 +36,8 @@ class ChoiceTile extends StatelessWidget {
               8.0,
             ),
             overlayColor: WidgetStatePropertyAll(
-              AppColors.mainPurpleShade.withOpacity(
-                0.1,
+              AppColors.mainPurpleShade.withValues(
+                alpha: 0.1,
               ),
             ),
             onTap: onTap,

@@ -7,7 +7,6 @@ import 'package:trivia_app/core/services/auth_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
 import 'package:trivia_app/features/authentication/view/login_screen.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
-import 'package:trivia_app/features/questions/bloc/question_bloc.dart';
 import 'package:trivia_app/features/questions/view/questions_screen.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_bloc.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_event.dart';
