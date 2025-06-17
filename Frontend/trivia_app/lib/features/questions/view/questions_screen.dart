@@ -5,7 +5,6 @@ import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/bloc/question_bloc.dart';
 import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
 import 'package:trivia_app/features/results/view/loser_page.dart';
-import 'package:trivia_app/features/results/view/winner_page.dart';
 
 class QuestionsScreen extends StatelessWidget {
   final Quiz quiz;
@@ -17,13 +16,15 @@ class QuestionsScreen extends StatelessWidget {
     required this.gradientColor,
   });
 
-  void _navigateToResultsPage(BuildContext context, bool hasPassed) {
+  void _navigateToResultsPage(BuildContext context, int xpCollected) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => hasPassed
-              ? const WinnerPage()
-              : LoserPage(quiz: quiz, gradientColor: gradientColor),
+          builder: (context) => WinnerPage(
+            quiz: quiz,
+            gradientColor: gradientColor,
+            xpCollected: xpCollected,
+          ),
         ),
       );
     });
@@ -55,7 +56,7 @@ class QuestionsScreen extends StatelessWidget {
       body: BlocConsumer<QuestionBloc, QuestionState>(
         listener: (context, state) {
           if (state is QuestionAnswersFinished) {
-            _navigateToResultsPage(context, true);
+            _navigateToResultsPage(context, state.xpCollected);
           }
         },
         builder: (context, state) {

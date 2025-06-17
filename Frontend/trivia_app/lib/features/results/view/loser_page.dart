@@ -1,127 +1,89 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lottie/lottie.dart';
 import 'package:trivia_app/core/domain/models/quiz.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
-import 'package:trivia_app/features/questions/bloc/question_bloc.dart';
 import 'package:trivia_app/features/questions/view/questions_screen.dart';
 import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
-import 'package:trivia_app/features/results/constants/colors.dart';
-import 'package:trivia_app/features/results/constants/constants.dart';
-import 'package:trivia_app/features/results/constants/result_banner_widget.dart';
-import 'package:trivia_app/features/results/constants/results_button_widget.dart';
 
-class LoserPage extends StatefulWidget {
+class WinnerPage extends StatelessWidget {
   final Quiz quiz;
   final GradientColor gradientColor;
+  final int xpCollected;
 
-  const LoserPage({
+  const WinnerPage({
     super.key,
     required this.quiz,
     required this.gradientColor,
+    required this.xpCollected,
   });
 
   @override
-  State<LoserPage> createState() => _LoserPagePageState();
-}
-
-class _LoserPagePageState extends State<LoserPage>
-    with TickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    var screenHeight = MediaQuery.of(context).size.height;
-    return Transform.translate(
-      offset: const Offset(
-        ResultUIConstants.totalScreenOffset,
-        0,
-      ),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Lottie.asset(
-            fit: BoxFit.cover,
-            alignment: Alignment.center,
-            'assets/sad_emoji_animation.json',
-            controller: _controller,
-            onLoaded: (composition) {
-              _controller
-                ..duration = composition.duration *
-                    ResultUIConstants.animationDurationLength
-                ..repeat();
-            },
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              screenHeight * ResultUIConstants.paddingForInteractiveElements,
-              0,
-              0,
-              0,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: screenHeight *
-                      ResultUIConstants.sizedBoxAboveMainMessageRatio,
+    return Scaffold(
+      backgroundColor: const Color(0xFF2B1055), 
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "You've collected $xpCollected XP!",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
                 ),
-                TextBannerWidget(
-                  text: 'You win some!\nYou lose some!',
-                  baseTextColor: ResultUiColors.resultMessageTextColor,
-                  shadowTextColor: ResultUiColors.resultMessageShadowColor,
-                ),
-                const SizedBox(
-                  height: ResultUIConstants.sizedBoxBetweenWidgetsAndMessage,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ResultsButtonWidget(
-                      text: 'Try again',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => QuestionsScreen(
-                              quiz: widget.quiz,
-                              gradientColor:  widget.gradientColor,
-                            ),
-                          ),
-                        );
-                      },
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                     ),
-                    ResultsButtonWidget(
-                      text: 'Categories',
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => QuizScreen(),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => QuestionsScreen(
+                            quiz: quiz,
+                            gradientColor: gradientColor,
                           ),
-                        );
-                      },
+                        ),
+                      );
+                    },
+                    child: const Text('Try Again'),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => QuizScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text('Categories'),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -66,8 +66,8 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     }
 
     if (currentState.currentQuestionIndex >= currentState.totalQuestions) {
-      await quizService.endQuiz();
-      emit(QuestionAnswersFinished()); 
+      final session = await quizService.endQuiz();
+      emit(QuestionAnswersFinished(xpCollected: session.xpCollected)); 
       return;
     }
 
