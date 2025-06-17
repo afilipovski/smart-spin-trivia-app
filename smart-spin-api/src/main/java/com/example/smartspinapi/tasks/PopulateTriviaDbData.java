@@ -1,11 +1,10 @@
 package com.example.smartspinapi.tasks;
 
+import com.example.smartspinapi.model.constants.SymbolicDatesAndOccasions;
 import com.example.smartspinapi.model.dto.triviaapi.GetApiTokenResponse;
 import com.example.smartspinapi.model.dto.triviaapi.GetQuestionsResponse;
 import com.example.smartspinapi.model.dto.triviaapi.TriviaApiQuestion;
-import com.example.smartspinapi.model.entity.QuizCategory;
-import com.example.smartspinapi.model.entity.QuizQuestion;
-import com.example.smartspinapi.model.entity.QuizQuestionChoice;
+import com.example.smartspinapi.model.entity.*;
 import com.example.smartspinapi.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,6 +12,7 @@ import org.springframework.web.client.RestClient;
 
 import javax.annotation.PostConstruct;
 import java.util.Objects;
+import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
@@ -54,28 +54,40 @@ public class PopulateTriviaDbData {
             return false;
 
         questions.results.forEach(questionResponse -> {
-            var quizCategory = assertQuizCategory(questionResponse);
-            var question = assertQuizQuestion(questionResponse, quizCategory);
+            var quizCategory = assertQuizCategoryQuizAndLimitedTimeEvent(questionResponse);
+            var question = createQuizQuestion(questionResponse, quizCategory);
 
-            questionResponse.incorrect_answers.forEach(answer -> {
-                assertQuestionChoice(answer, question, false);
-            });
-            assertQuestionChoice(questionResponse.correct_answer, question, true);
+            questionResponse.incorrect_answers.forEach(answer -> createQuestionChoice(answer, question, false));
+            createQuestionChoice(questionResponse.correct_answer, question, true);
         });
 
         return true;
     }
 
-    private QuizQuestionChoice assertQuestionChoice(String answer, QuizQuestion question, boolean correct) {
+    private void createQuizAndLimitedTimeEvent(QuizCategory quizCategory) {
+        var quiz = new Quiz();
+        quiz.setQuizCategory(quizCategory);
+        Random random = new Random();
+        int numQuestions = random.nextInt(7, 13);
+        quiz.setNumQuestions(numQuestions);
+        quiz.setXpPerQuestion(50/numQuestions);
+
+        LimitedTimeEvent limitedTimeEvent = SymbolicDatesAndOccasions.getRandomLimitedTimeEvent();
+        quiz.setEvent(limitedTimeEvent);
+
+        limitedTimeEventService.save(limitedTimeEvent);
+        quizService.save(quiz);
+    }
+
+    private void createQuestionChoice(String answer, QuizQuestion question, boolean correct) {
         var questionChoice = new QuizQuestionChoice();
         questionChoice.setContent(answer);
         questionChoice.setQuestion(question);
         questionChoice.setCorrect(correct);
         quizQuestionChoiceService.save(questionChoice);
-        return questionChoice;
     }
 
-    private QuizQuestion assertQuizQuestion(TriviaApiQuestion questionResponse, QuizCategory quizCategory) {
+    private QuizQuestion createQuizQuestion(TriviaApiQuestion questionResponse, QuizCategory quizCategory) {
         var question = new QuizQuestion();
         question.setCategory(quizCategory);
         question.setContent(questionResponse.question);
@@ -83,12 +95,13 @@ public class PopulateTriviaDbData {
         return question;
     }
 
-    private QuizCategory assertQuizCategory(TriviaApiQuestion question) {
+    private QuizCategory assertQuizCategoryQuizAndLimitedTimeEvent(TriviaApiQuestion question) {
         var quizCategory = quizCategoryService.findByName(question.category);
         if (quizCategory == null) {
             quizCategory = new QuizCategory();
             quizCategory.setName(question.category);
             quizCategoryService.save(quizCategory);
+            createQuizAndLimitedTimeEvent(quizCategory);
         }
         return quizCategory;
     }
