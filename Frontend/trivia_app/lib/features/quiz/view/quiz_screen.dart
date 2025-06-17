@@ -153,12 +153,9 @@ class _QuizScreenState extends State<QuizScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => BlocProvider(
-                  create: (_) => QuestionBloc(),
-                  child: QuestionsScreen(
-                    quiz: state.quiz,
-                    gradientColor:  state.color,
-                  ),
+                builder: (_) => QuestionsScreen(
+                  quiz: state.quiz,
+                  gradientColor:  state.color,
                 ),
               ),
             );

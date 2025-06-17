@@ -13,12 +13,16 @@ final class QuestionAnswering extends QuestionState {
     required this.choicesMap,
     required this.currentQuestionIndex,
     required this.totalQuestions,
+    this.selectedChoice,
+    this.selectedIndex,
   });
 
   final Question question;
   final Map<Question, Choice> choicesMap;
   final int currentQuestionIndex;
   final int totalQuestions;
+  final Choice? selectedChoice;
+  final int? selectedIndex;
 
   @override
   List<Object?> get props =>

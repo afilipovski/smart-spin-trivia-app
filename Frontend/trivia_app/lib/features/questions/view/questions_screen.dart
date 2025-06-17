@@ -1,117 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_app/core/domain/models/choice.dart';
 import 'package:trivia_app/core/domain/models/quiz.dart';
-import 'package:trivia_app/core/services/quiz_service.dart';
-import 'package:trivia_app/core/services/service_locator.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/bloc/question_bloc.dart';
 import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
 import 'package:trivia_app/features/results/view/loser_page.dart';
 import 'package:trivia_app/features/results/view/winner_page.dart';
 
-// ignore: must_be_immutable
-class QuestionsScreen extends StatefulWidget {
-  QuestionsScreen({
+class QuestionsScreen extends StatelessWidget {
+  final Quiz quiz;
+  final GradientColor gradientColor;
+
+  const QuestionsScreen({
     super.key,
     required this.quiz,
     required this.gradientColor,
   });
 
-  final Quiz quiz;
-  final GradientColor gradientColor;
-  Choice? selectedChoice;
-
-  @override
-  State<QuestionsScreen> createState() => _QuestionsScreenState();
-}
-
-class _QuestionsScreenState extends State<QuestionsScreen> {
-  int selectedTileIndex = -1;
-  bool hasPassed = true;
-
-  final quizService = getIt<QuizService>();
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<QuestionBloc>().add(
-          QuestionsScreenInitialized(quizId: widget.quiz.id),
-        );
+  void _navigateToResultsPage(BuildContext context, bool hasPassed) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => hasPassed
+              ? const WinnerPage()
+              : LoserPage(quiz: quiz, gradientColor: gradientColor),
+        ),
+      );
+    });
   }
 
-  void _navigateToResultsPage() {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) async {
-        await quizService.endQuiz();
-        if (!mounted) return;
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => hasPassed
-                ? const WinnerPage()
-                : LoserPage(
-                    quiz: widget.quiz,
-                    gradientColor: widget.gradientColor,
-                  ),
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> _handleBackPressed() async {
-    await quizService.endQuiz();
-
-    if (!mounted) return;
-
+  void _handleBackPressed(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) => QuizScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => QuizScreen()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<QuestionBloc>().add(QuestionsScreenInitialized(quizId: quiz.id));
+    });
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF2B1055),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () async {
-            await _handleBackPressed();
-          },
+          onPressed: () => _handleBackPressed(context),
         ),
       ),
-      body: BlocBuilder<QuestionBloc, QuestionState>(
+      body: BlocConsumer<QuestionBloc, QuestionState>(
+        listener: (context, state) {
+          if (state is QuestionAnswersFinished) {
+            _navigateToResultsPage(context, true);
+          }
+        },
         builder: (context, state) {
           if (state is QuestionLoadInProgress) {
             return const Center(child: CircularProgressIndicator());
           }
 
           if (state is QuestionLoadFailed) {
-            return const Center(child: Text("Failed to load questions"));
-          }
-
-          if (state is QuestionAnswersFinished) {
-            _navigateToResultsPage();
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (state is QuestionAnswering) {
             final question = state.question;
-            final choices = question.choices;
+            final selectedChoice = state.selectedChoice; 
 
             return Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF2B1055),
-                    Color(0xFF7597DE),
-                  ],
+                  colors: [Color(0xFF2B1055), Color(0xFF7597DE)],
                 ),
               ),
               child: Padding(
@@ -130,21 +95,17 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                     ),
                     const SizedBox(height: 40),
                     Column(
-                      children: List.generate(choices!.length, (index) {
-                        final choice = choices[index];
+                      children: List.generate(question.choices!.length, (index) {
+                        final choice = question.choices![index];
+                        final isSelected = state.selectedIndex == index;
+
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 16.0),
                           child: GestureDetector(
                             onTap: () {
-                              setState(() {
-                                selectedTileIndex = index;
-                              });
-
-                              widget.selectedChoice = choice;
-
                               context.read<QuestionBloc>().add(
-                                    QuestionChoiceTapped(choice: choice),
-                                  );
+                                QuestionChoiceTapped(choice: choice,),
+                              );
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(
@@ -153,13 +114,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                               ),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(30.0),
-                                color: selectedTileIndex == index
-                                    ? Colors.white
-                                    : Colors.transparent,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 2.0,
-                                ),
+                                color: isSelected ? Colors.white : Colors.transparent,
+                                border: Border.all(color: Colors.white, width: 2.0),
                               ),
                               child: Row(
                                 children: [
@@ -168,22 +124,15 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                     height: 20,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: selectedTileIndex == index
-                                          ? Colors.purple
-                                          : Colors.transparent,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 2.0,
-                                      ),
+                                      color: isSelected ? Colors.purple : Colors.transparent,
+                                      border: Border.all(color: Colors.white, width: 2.0),
                                     ),
                                   ),
                                   const SizedBox(width: 12),
                                   Text(
                                     choice.content,
                                     style: TextStyle(
-                                      color: selectedTileIndex == index
-                                          ? Colors.purple
-                                          : Colors.white,
+                                      color: isSelected ? Colors.purple : Colors.white,
                                       fontSize: 16,
                                     ),
                                   ),
@@ -199,11 +148,13 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () {
-                              context.read<QuestionBloc>().add(
-                                  QuestionNextTapped(
-                                      choice: widget.selectedChoice!));
-                            },
+                            onPressed: selectedChoice != null
+                                ? () {
+                                    context.read<QuestionBloc>().add(
+                                          QuestionNextTapped(choice: selectedChoice),
+                                        );
+                                  }
+                                : null,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(

@@ -98,12 +98,9 @@ class _LoserPagePageState extends State<LoserPage>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => BlocProvider(
-                              create: (_) => QuestionBloc(),
-                              child: QuestionsScreen(
-                                quiz: widget.quiz,
-                                gradientColor:  widget.gradientColor,
-                              ),
+                            builder: (_) => QuestionsScreen(
+                              quiz: widget.quiz,
+                              gradientColor:  widget.gradientColor,
                             ),
                           ),
                         );
