@@ -55,28 +55,32 @@ public class PopulateTriviaDbData {
 
         questions.results.forEach(questionResponse -> {
             var quizCategory = assertQuizCategory(questionResponse);
-
-            var question = new QuizQuestion();
-            question.setCategory(quizCategory);
-            question.setContent(questionResponse.question);
-            quizQuestionService.save(question);
+            var question = assertQuizQuestion(questionResponse, quizCategory);
 
             questionResponse.incorrect_answers.forEach(answer -> {
-                var questionChoice = new QuizQuestionChoice();
-                questionChoice.setContent(answer);
-                questionChoice.setQuestion(question);
-                questionChoice.setCorrect(false);
-                quizQuestionChoiceService.save(questionChoice);
+                assertQuestionChoice(answer, question, false);
             });
-            var questionChoice = new QuizQuestionChoice();
-            questionChoice.setQuestion(question);
-            questionChoice.setCorrect(true);
-            questionChoice.setContent(questionResponse.correct_answer);
-            quizQuestionChoiceService.save(questionChoice);
-
+            assertQuestionChoice(questionResponse.correct_answer, question, true);
         });
 
         return true;
+    }
+
+    private QuizQuestionChoice assertQuestionChoice(String answer, QuizQuestion question, boolean correct) {
+        var questionChoice = new QuizQuestionChoice();
+        questionChoice.setContent(answer);
+        questionChoice.setQuestion(question);
+        questionChoice.setCorrect(correct);
+        quizQuestionChoiceService.save(questionChoice);
+        return questionChoice;
+    }
+
+    private QuizQuestion assertQuizQuestion(TriviaApiQuestion questionResponse, QuizCategory quizCategory) {
+        var question = new QuizQuestion();
+        question.setCategory(quizCategory);
+        question.setContent(questionResponse.question);
+        quizQuestionService.save(question);
+        return question;
     }
 
     private QuizCategory assertQuizCategory(TriviaApiQuestion question) {
