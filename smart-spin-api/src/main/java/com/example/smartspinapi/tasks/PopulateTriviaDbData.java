@@ -1,8 +1,11 @@
 package com.example.smartspinapi.tasks;
 
+import com.example.smartspinapi.model.dto.triviaapi.GetApiTokenResponse;
+import com.example.smartspinapi.model.dto.triviaapi.GetQuestionsResponse;
 import com.example.smartspinapi.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 
 import javax.annotation.PostConstruct;
 
@@ -17,6 +20,17 @@ public class PopulateTriviaDbData {
 
     @PostConstruct
     public void init() {
-        System.out.println("Hello World!");
+        RestClient triviaApiClient = RestClient.builder()
+                .baseUrl("https://opentdb.com")
+                .build();
+
+        var tokenResponse = triviaApiClient.get()
+                .uri("/api_token.php?command=request").retrieve().body(GetApiTokenResponse.class);
+
+        var questions = triviaApiClient.get()
+                .uri("/api.php?amount=50&token=" + tokenResponse.token)
+                .retrieve().body(GetQuestionsResponse.class);
+
+        return;
     }
 }
