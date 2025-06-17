@@ -21,4 +21,12 @@ public class QuizCategoryService {
     public QuizCategory findById(UUID id) {
         return quizCategoryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
+
+    public void save(QuizCategory quizCategory) {
+        quizCategoryRepository.save(quizCategory);
+    }
+
+    public QuizCategory findByName(String name) {
+        return quizCategoryRepository.findByName(name).orElse(null);
+    }
 }

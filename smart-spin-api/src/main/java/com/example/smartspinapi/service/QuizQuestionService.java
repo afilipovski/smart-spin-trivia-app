@@ -56,4 +56,8 @@ public class QuizQuestionService {
         quizSessionService.setActiveQuestion(userProfile, quizQuestion);
         return quizQuestion;
     }
+
+    public void save(QuizQuestion quizQuestion) {
+        quizQuestionRepository.save(quizQuestion);
+    }
 }
