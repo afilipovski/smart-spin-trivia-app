@@ -36,8 +36,8 @@ public class PopulateTriviaDbData {
                 .uri("/api_token.php?command=request").retrieve().body(GetApiTokenResponse.class))
                 .token;
 
-        // 20x50 = 1000 questions
-        for (int i = 0; i < 1; i++) {
+        // 20x50 = 1000 questions, 20x(5+2)=140 seconds (about two minutes to finish)
+        for (int i = 0; i < 20; i++) {
             if (!retrieveQuestionsSingleRun(triviaApiClient, token))
                 return;
             wait(5000);
