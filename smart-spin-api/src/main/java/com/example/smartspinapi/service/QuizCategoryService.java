@@ -25,4 +25,8 @@ public class QuizCategoryService {
     public void save(QuizCategory quizCategory) {
         quizCategoryRepository.save(quizCategory);
     }
+
+    public QuizCategory findByName(String name) {
+        return quizCategoryRepository.findByName(name).orElse(null);
+    }
 }
