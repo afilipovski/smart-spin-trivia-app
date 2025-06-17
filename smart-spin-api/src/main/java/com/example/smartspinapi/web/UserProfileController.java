@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user-profile")
@@ -39,4 +40,15 @@ public class UserProfileController {
     public StreakEvaluationDTO streak(@TriviaUser UserProfile userProfile, @RequestParam ZonedDateTime userTime) {
         return userProfileService.getEvaluatedStreak(userProfile.getId(), userTime.getZone());
     }
+
+    @GetMapping()
+    public List<UserProfile> listUserProfiles(@RequestParam(required = false) String fullName) {
+        return userProfileService.getUserProfilesByFullName(fullName);
+    }
+
+    @GetMapping("{id}")
+    public UserProfile getUserProfile(@PathVariable String id) {
+        return userProfileService.getUserProfileById(id);
+    }
+
 }

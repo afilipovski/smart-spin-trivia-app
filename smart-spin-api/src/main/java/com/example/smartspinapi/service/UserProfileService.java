@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -92,4 +93,10 @@ public class UserProfileService {
                 .orElseThrow(() -> new UserProfileNotFoundException(id));
     }
 
+    public List<UserProfile> getUserProfilesByFullName(String fullName) {
+        if (fullName == null) {
+            return userProfileRepository.findAll();
+        }
+        return userProfileRepository.findAllByFullNameLike("%" + fullName + "%");
+    }
 }

@@ -5,6 +5,7 @@ import com.example.smartspinapi.model.entity.Quiz;
 import com.example.smartspinapi.model.entity.QuizQuestion;
 import com.example.smartspinapi.model.entity.QuizSession;
 import com.example.smartspinapi.model.entity.UserProfile;
+import com.example.smartspinapi.model.exception.TriviaEntityNotFoundException;
 import com.example.smartspinapi.repository.QuizSessionRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -83,5 +84,10 @@ public class QuizSessionService {
                 .orElseThrow(() -> new EntityNotFoundException("Quiz session with id " + userProfile.getId() + " not found"));
         quizSessionRepository.delete(session);
         return session;
+    }
+
+    public QuizSession getQuizSession(UserProfile userProfile) {
+        return quizSessionRepository.findByUserProfileId(userProfile.getId())
+                .orElseThrow(() -> new TriviaEntityNotFoundException(QuizSession.class));
     }
 }
