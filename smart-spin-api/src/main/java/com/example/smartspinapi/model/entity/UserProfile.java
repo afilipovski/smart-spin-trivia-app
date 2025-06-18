@@ -38,6 +38,5 @@ public class UserProfile {
         this.fullName = fullName;
         this.birthDate = birthDate;
         this.streak = 0;
-        this.streakLastExtended = ZonedDateTime.now();
     }
 }
