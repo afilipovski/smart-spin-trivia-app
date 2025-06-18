@@ -14,6 +14,7 @@ import 'package:trivia_app/features/quiz/bloc/quiz_bloc.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_event.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_state.dart';
 import '../../user_profile/view/user_profile_screen.dart';
+import 'package:html_unescape/html_unescape.dart';
 
 class QuizScreen extends StatefulWidget {
   QuizScreen({super.key});
@@ -49,6 +50,7 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   Widget build(BuildContext context) {
     Random random = Random();
+    final unescape = HtmlUnescape();
 
     return Scaffold(
       appBar: AppBar(
@@ -97,7 +99,7 @@ class _QuizScreenState extends State<QuizScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 12.0),
                           child: Text(
-                            '🔥 ${streak?.streak}',
+                            '🔥 ${streak?.streak ?? '0'}',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -141,13 +143,14 @@ class _QuizScreenState extends State<QuizScreen> {
                       Column(
                         children: state.quizzes.map(
                           (quiz) {
+                            final unescapedQuestionContent = unescape.convert(quiz.category?.name ?? "");
                             final GradientColor color =
                                 GradientColor.values[random.nextInt(
                               GradientColor.values.length,
                             )];
                             return ColoredCard(
                               isFinished: true,
-                              categoryName: quiz.category?.name ?? "",
+                              categoryName: unescapedQuestionContent,
                               color: GradientColor.values[
                                   random.nextInt(GradientColor.values.length)],
                               onSelectTap: () {
