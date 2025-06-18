@@ -6,6 +6,7 @@ import com.example.smartspinapi.model.entity.QuizQuestion;
 import com.example.smartspinapi.model.entity.QuizSession;
 import com.example.smartspinapi.model.entity.UserProfile;
 import com.example.smartspinapi.repository.QuizSessionRepository;
+import com.example.smartspinapi.utils.QuizSessionJoinCodeGenerator;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,9 @@ public class QuizSessionService {
         Quiz quiz = quizService.findById(quizId);
         if (userProfile.getQuizSession() != null)
             throw new EntityExistsException("Quiz session with user id " + userProfile.getId() + " already exists");
-        QuizSession quizSession = new QuizSession(quiz, userProfile);
+
+        String joinCode = QuizSessionJoinCodeGenerator.generateCode();
+        QuizSession quizSession = new QuizSession(quiz, userProfile, joinCode);
         return quizSessionRepository.save(quizSession);
     }
 
@@ -83,5 +86,22 @@ public class QuizSessionService {
                 .orElseThrow(() -> new EntityNotFoundException("Quiz session with id " + userProfile.getId() + " not found"));
         quizSessionRepository.delete(session);
         return session;
+    }
+
+    public QuizSession joinQuizSession(UserProfile userProfile, String joinCode) {
+        QuizSession session = userProfile.getQuizSession();
+        if (session != null) {
+            throw new EntityExistsException("Quiz session with user id " + userProfile.getId() + " already exists");
+        }
+
+        QuizSession sessionToJoin = quizSessionRepository.findByJoinCode(joinCode)
+                .orElseThrow(() -> new EntityNotFoundException("Quiz session with join code " + joinCode + " not found"));
+
+        QuizSession newSession = new QuizSession();
+        newSession.setJoinCode(joinCode);
+        newSession.setUserProfile(userProfile);
+        newSession.setQuiz(sessionToJoin.getQuiz());
+
+        return quizSessionRepository.save(newSession);
     }
 }

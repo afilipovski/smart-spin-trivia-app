@@ -34,8 +34,9 @@ public class QuizSession extends BaseEntity {
         return Math.min(quiz.getNumQuestions(), quiz.getQuizCategory().getQuestions().size());
     }
 
-    public QuizSession(Quiz quiz, UserProfile userProfile) {
+    public QuizSession(Quiz quiz, UserProfile userProfile, String joinCode) {
         this.quiz = quiz;
         this.userProfile = userProfile;
+        this.joinCode = joinCode;
     }
 }

@@ -12,4 +12,5 @@ import java.util.UUID;
 public interface QuizSessionRepository extends JpaRepository<QuizSession, UUID> {
     @EntityGraph(attributePaths = {"questions"})
     Optional<QuizSession> findByUserProfileId(String userProfileId);
+    Optional<QuizSession> findByJoinCode(String joinCode);
 }
