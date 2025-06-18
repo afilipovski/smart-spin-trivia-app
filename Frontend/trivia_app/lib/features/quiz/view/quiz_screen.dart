@@ -3,27 +3,31 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:trivia_app/core/domain/dtos/streak_dto.dart';
 import 'package:trivia_app/core/services/auth_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
+import 'package:trivia_app/core/services/user_service.dart';
 import 'package:trivia_app/features/authentication/view/login_screen.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/view/questions_screen.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_bloc.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_event.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_state.dart';
-
 import '../../user_profile/view/user_profile_screen.dart';
 
 class QuizScreen extends StatefulWidget {
   QuizScreen({super.key});
 
   final AuthService authService = getIt<AuthService>();
+  final UserService userService = getIt<UserService>();
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
 }
 
 class _QuizScreenState extends State<QuizScreen> {
+  StreakDto? streak;
+
   @override
   void initState() {
     super.initState();
@@ -31,11 +35,21 @@ class _QuizScreenState extends State<QuizScreen> {
     BlocProvider.of<QuizBloc>(context).add(
       QuizInitialLoad(),
     );
+
+    _getUserStreak();
+  }
+
+  Future<void> _getUserStreak() async {
+    final streakDto = await widget.userService.getStreak();
+    setState(() {
+      streak = streakDto;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     Random random = Random();
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -60,17 +74,7 @@ class _QuizScreenState extends State<QuizScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const ProfileScreen(
-                    username: "John Doe",
-                    email: "john.doe@example.com",
-                    dateOfBirth: "01/01/1990",
-                    dailyStreak: 15,
-                    friends: [
-                      {"name": "Alice", "streak": 5},
-                      {"name": "Bob", "streak": 12},
-                      {"name": "Charlie", "streak": 8},
-                    ],
-                  ),
+                  builder: (context) => const ProfileScreen(),
                 ),
               );
             },
@@ -87,8 +91,35 @@ class _QuizScreenState extends State<QuizScreen> {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12.0),
+                          child: Text(
+                            '🔥 ${streak?.streak}',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: streak?.shouldReset == true
+                                  ? Colors.red
+                                  : Colors.blue,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'day streak',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
                     Padding(
-                      padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
+                      padding: const EdgeInsets.only(left: 20.0, bottom: 16.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,7 +185,7 @@ class _QuizScreenState extends State<QuizScreen> {
               MaterialPageRoute(
                 builder: (_) => QuestionsScreen(
                   quiz: state.quiz,
-                  gradientColor:  state.color,
+                  gradientColor: state.color,
                 ),
               ),
             );
