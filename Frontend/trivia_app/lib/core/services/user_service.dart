@@ -1,3 +1,4 @@
+import 'package:trivia_app/core/domain/dtos/streak_dto.dart';
 import 'package:trivia_app/core/domain/dtos/user_dto.dart';
 import 'package:trivia_app/core/domain/models/user_profile.dart';
 import 'package:trivia_app/core/services/auth_service.dart';
@@ -35,5 +36,11 @@ class UserService {
     } on Exception catch (e) {
       loggerService.logError('$e');
     }
+  }
+
+  Future<StreakDto> getStreak() async {
+    final time = DateTime.now().toUtc().toIso8601String();
+    final response = await _client.get("user-profile/streak?userTime=$time",);
+    return StreakDto.fromJson(response);
   }
 }

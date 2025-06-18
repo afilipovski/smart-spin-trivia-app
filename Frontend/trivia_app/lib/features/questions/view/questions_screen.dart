@@ -5,6 +5,8 @@ import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/bloc/question_bloc.dart';
 import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
 import 'package:trivia_app/features/results/view/loser_page.dart';
+import 'package:html_unescape/html_unescape.dart';
+
 
 class QuestionsScreen extends StatelessWidget {
   final Quiz quiz;
@@ -72,6 +74,9 @@ class QuestionsScreen extends StatelessWidget {
             final question = state.question;
             final selectedChoice = state.selectedChoice; 
 
+            final unescape = HtmlUnescape();
+            final unescapedQuestionContent = unescape.convert(question.content);
+
             return Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -87,7 +92,7 @@ class QuestionsScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: 60),
                     Text(
-                      question.content,
+                      unescapedQuestionContent,
                       style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
@@ -99,6 +104,7 @@ class QuestionsScreen extends StatelessWidget {
                       children: List.generate(question.choices!.length, (index) {
                         final choice = question.choices![index];
                         final isSelected = state.selectedIndex == index;
+                        final unescapedChoiceContent = unescape.convert(choice.content);      
 
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 16.0),
@@ -131,7 +137,7 @@ class QuestionsScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 12),
                                   Text(
-                                    choice.content,
+                                    unescapedChoiceContent,
                                     style: TextStyle(
                                       color: isSelected ? Colors.purple : Colors.white,
                                       fontSize: 16,

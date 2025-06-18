@@ -6,6 +6,7 @@ import 'package:trivia_app/core/domain/models/quiz.dart';
 import 'package:trivia_app/core/domain/models/quiz_session.dart';
 import 'package:trivia_app/core/services/http_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
+import 'dart:convert';
 
 class QuizService {
   QuizService();
@@ -35,7 +36,8 @@ class QuizService {
   }
 
   Future<AnswerQuestionResponseDto> answerQuestion(String answer) async {
-    final dto = AnswerQuestionRequestDto(answer: answer);
+    final escapedAnswer = const HtmlEscape(HtmlEscapeMode.element).convert(answer);
+    final dto = AnswerQuestionRequestDto(answer: escapedAnswer);
     final result = await _client.post("quiz-session/answer", dto);
 
     return AnswerQuestionResponseDto.fromJson(result);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trivia_app/core/domain/dtos/streak_dto.dart';
 import 'package:trivia_app/core/domain/models/user_profile.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
 import 'package:trivia_app/core/services/user_service.dart';
@@ -6,19 +7,10 @@ import 'package:trivia_app/features/friends/view/add_friend_screen.dart';
 import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final String username;
-  final String email;
-  final String dateOfBirth;
-  final int dailyStreak;
-  final List<Map<String, dynamic>> friends;
 
   const ProfileScreen({
     super.key,
-    required this.username,
-    required this.email,
-    required this.dateOfBirth,
-    required this.dailyStreak,
-    required this.friends,
+    
   });
 
   @override
@@ -28,17 +20,26 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final UserService userService = getIt<UserService>();
   UserProfile? userProfile;
+  StreakDto? streakDto;
 
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
+    _getStreak();
   }
 
   Future<void> _loadUserProfile() async {
     final profile = await userService.getUserProfile();
     setState(() {
       userProfile = profile;
+    });
+  }
+
+  Future<void> _getStreak() async {
+    final streak = await userService.getStreak();
+    setState(() {
+      streakDto = streak;
     });
   }
 
@@ -148,7 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         userProfile!.friends != null &&
                         userProfile!.friends!.isNotEmpty
                     ? ListView.builder(
-                        itemCount: widget.friends.length,
+                        itemCount: userProfile!.friends!.length,
                         itemBuilder: (context, index) {
                           final friend = userProfile!.friends![index];
                           return ListTile(
