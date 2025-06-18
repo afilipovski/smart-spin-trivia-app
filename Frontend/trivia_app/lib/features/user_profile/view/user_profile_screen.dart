@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:trivia_app/core/domain/models/user_profile.dart';
+import 'package:trivia_app/core/services/service_locator.dart';
+import 'package:trivia_app/core/services/user_service.dart';
 import 'package:trivia_app/features/friends/view/add_friend_screen.dart';
 import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final String username;
   final String email;
   final String dateOfBirth;
@@ -17,6 +20,27 @@ class ProfileScreen extends StatelessWidget {
     required this.dailyStreak,
     required this.friends,
   });
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final UserService userService = getIt<UserService>();
+  UserProfile? userProfile;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    final profile = await userService.getUserProfile();
+    setState(() {
+      userProfile = profile;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,14 +81,14 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      username,
+                      userProfile?.fullName ?? '',
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      email,
+                      userProfile?.email ?? '',
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.grey,
@@ -87,8 +111,13 @@ class ProfileScreen extends StatelessWidget {
               Row(
                 children: [
                   const Icon(Icons.calendar_today, size: 16),
-                  const SizedBox(width: 10),
-                  Text("Date of Birth: $dateOfBirth"),
+                  const SizedBox(width: 17),
+                  Text(
+                    "Date of Birth: ${userProfile?.birthDate.day}.${userProfile?.birthDate.month}.${userProfile?.birthDate.year}",
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -96,7 +125,11 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   const Icon(Icons.local_fire_department, color: Colors.orange),
                   const SizedBox(width: 10),
-                  Text("Daily Streak: $dailyStreak Days"),
+                  Text("Daily Streak: ${userProfile?.streak} Days",
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -111,27 +144,29 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Expanded(
-                child: friends.isNotEmpty
+                child: userProfile != null &&
+                        userProfile!.friends != null &&
+                        userProfile!.friends!.isNotEmpty
                     ? ListView.builder(
-                        itemCount: friends.length,
+                        itemCount: widget.friends.length,
                         itemBuilder: (context, index) {
-                          final friend = friends[index];
+                          final friend = userProfile!.friends![index];
                           return ListTile(
                             leading: CircleAvatar(
                               backgroundColor: Colors.grey[300],
                               child: Text(
-                                friend['name'][0].toUpperCase(),
+                                friend.fullName[0].toUpperCase(),
                                 style: const TextStyle(color: Colors.black),
                               ),
                             ),
-                            title: Text(friend['name']),
+                            title: Text(friend.fullName),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Icon(Icons.local_fire_department,
                                     color: Colors.orange),
                                 const SizedBox(width: 5),
-                                Text("${friend['streak']}"),
+                                Text("${friend.streak}"),
                               ],
                             ),
                           );

@@ -1,19 +1,26 @@
 import 'package:trivia_app/core/domain/dtos/user_dto.dart';
-import 'package:trivia_app/core/domain/models/question.dart';
+import 'package:trivia_app/core/domain/models/user_profile.dart';
+import 'package:trivia_app/core/services/auth_service.dart';
 import 'package:trivia_app/core/services/http_service.dart';
 import 'package:trivia_app/core/services/logger_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
-import 'package:trivia_app/models.dart';
 
 class UserService {
   UserService([HttpService? client]);
 
   final HttpService _client = getIt<HttpService>();
   final LoggerService loggerService = getIt<LoggerService>();
+  final AuthService authService = getIt<AuthService>();
 
-  Future<List<Question>> getUserProfile() async {
-    final List response = await _client.get("");
-    return response.map((q) => Question.fromJson(q)).toList();
+  Future<UserProfile?> getUserProfile() async {
+    final user = authService.getCurrentUser();
+
+    if(user == null){
+      return null;
+    }
+    final path = "user-profile/${user.uid}"; 
+    final response = await _client.get(path);
+    return UserProfile.fromJson(response);
   }
 
   Future<void> registerUser({
