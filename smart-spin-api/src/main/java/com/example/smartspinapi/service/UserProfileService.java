@@ -97,6 +97,6 @@ public class UserProfileService {
         if (fullName == null) {
             return userProfileRepository.findAll();
         }
-        return userProfileRepository.findAllByFullNameLike("%" + fullName + "%");
+        return userProfileRepository.findAllByFullNameLikeIgnoreCase("%" + fullName + "%");
     }
 }
