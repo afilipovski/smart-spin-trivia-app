@@ -55,7 +55,7 @@ public class QuizSessionController {
     }
 
     @PostMapping("/start/{joinCode}")
-    public void startQuizSession(@TriviaUser UserProfile userProfile, @PathVariable String joinCode) throws UserIsNotMultiplayerQuizLeaderException {
-        multiplayerQuizSessionService.startGame(userProfile.getId(), joinCode);
+    public void startQuizSession(@TriviaUser UserProfile userProfile) throws UserIsNotMultiplayerQuizLeaderException {
+        multiplayerQuizSessionService.startGame(userProfile);
     }
 }

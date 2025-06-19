@@ -2,6 +2,7 @@ package com.example.smartspinapi.service;
 
 import com.example.smartspinapi.model.dto.multiplayer.MultiplayerQuizSession;
 import com.example.smartspinapi.model.entity.QuizSession;
+import com.example.smartspinapi.model.entity.UserProfile;
 import com.example.smartspinapi.model.enums.MultiplayerQuizSessionStatus;
 import com.example.smartspinapi.model.exception.UserIsNotMultiplayerQuizLeaderException;
 import com.example.smartspinapi.repository.MultiplayerQuizSessionRepository;
@@ -33,6 +34,9 @@ public class MultiplayerQuizSessionService {
 
     public void removePlayerFromMultiplayerQuizSession(String userId, String joinCode) {
         var session = multiplayerQuizSessionRepository.findByJoinCode(joinCode).join();
+        if (session == null) {
+            return;
+        }
         if (session.leader.equals(userId)) {
             multiplayerQuizSessionRepository.delete(joinCode).join();
         }
@@ -42,11 +46,12 @@ public class MultiplayerQuizSessionService {
         }
     }
 
-    public void startGame(String userId, String joinCode) throws UserIsNotMultiplayerQuizLeaderException {
-        var session = multiplayerQuizSessionRepository.findByJoinCode(joinCode).join();
-        if (!session.leader.equals(userId))
-            throw new UserIsNotMultiplayerQuizLeaderException(userId, joinCode);
+    public void startGame(UserProfile user) throws UserIsNotMultiplayerQuizLeaderException {
+        var localSession = user.getQuizSession();
+        var session = multiplayerQuizSessionRepository.findByJoinCode(localSession.joinCode).join();
+        if (!session.leader.equals(user.getId()))
+            throw new UserIsNotMultiplayerQuizLeaderException(user.getId(), localSession.joinCode);
         session.status = MultiplayerQuizSessionStatus.ACTIVE.name();
-        multiplayerQuizSessionRepository.save(joinCode, session).join();
+        multiplayerQuizSessionRepository.save(localSession.joinCode, session).join();
     }
 }
