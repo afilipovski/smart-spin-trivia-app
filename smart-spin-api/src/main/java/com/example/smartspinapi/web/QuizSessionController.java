@@ -45,4 +45,9 @@ public class QuizSessionController {
     public QuizSession getQuizSession(@TriviaUser UserProfile userProfile) {
         return quizSessionService.getQuizSession(userProfile);
     }
+
+    @PostMapping("/join/{joinCode}")
+    public QuizSession joinQuizSession(@TriviaUser UserProfile userProfile, @PathVariable String joinCode) {
+        return quizSessionService.joinQuizSession(userProfile, joinCode);
+    }
 }
