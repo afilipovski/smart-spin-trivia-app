@@ -1,11 +1,14 @@
 package com.example.smartspinapi.service;
 
 import com.example.smartspinapi.model.dto.AnswerQuestionResponseDTO;
+import com.example.smartspinapi.model.dto.multiplayer.MultiplayerQuizSession;
 import com.example.smartspinapi.model.entity.Quiz;
 import com.example.smartspinapi.model.entity.QuizQuestion;
 import com.example.smartspinapi.model.entity.QuizSession;
 import com.example.smartspinapi.model.entity.UserProfile;
+import com.example.smartspinapi.model.enums.MultiplayerQuizSessionStatus;
 import com.example.smartspinapi.model.exception.TriviaEntityNotFoundException;
+import com.example.smartspinapi.repository.MultiplayerQuizSessionRepository;
 import com.example.smartspinapi.repository.QuizSessionRepository;
 import com.example.smartspinapi.utils.QuizSessionJoinCodeGenerator;
 import jakarta.persistence.EntityExistsException;
@@ -14,15 +17,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class QuizSessionService {
     private final QuizService quizService;
     private final QuizSessionRepository quizSessionRepository;
+    private final MultiplayerQuizSessionRepository multiplayerQuizSessionRepository;
 
     public QuizSession createQuizSession(UUID quizId, UserProfile userProfile) {
         Quiz quiz = quizService.findById(quizId);
@@ -31,6 +33,13 @@ public class QuizSessionService {
 
         String joinCode = QuizSessionJoinCodeGenerator.generateCode();
         QuizSession quizSession = new QuizSession(quiz, userProfile, joinCode);
+
+        MultiplayerQuizSession multiplayerQuizSession = new MultiplayerQuizSession();
+        multiplayerQuizSession.leader = userProfile.getId();
+        multiplayerQuizSession.players = Collections.singletonList(userProfile.getId());
+        multiplayerQuizSession.status = MultiplayerQuizSessionStatus.CREATED.name();
+        multiplayerQuizSessionRepository.save(quizSession.joinCode, multiplayerQuizSession).join();
+
         return quizSessionRepository.save(quizSession);
     }
 
