@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:trivia_app/core/domain/dtos/streak_dto.dart';
+import 'package:trivia_app/core/domain/models/user_friendship.dart';
 import 'package:trivia_app/core/domain/models/user_profile.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
+import 'package:trivia_app/core/services/user_friendship_service.dart';
 import 'package:trivia_app/core/services/user_service.dart';
 import 'package:trivia_app/features/friends/view/add_friend_screen.dart';
 import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
@@ -19,13 +21,17 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final UserService userService = getIt<UserService>();
+  final UserFriendshipService userFriendshipService = getIt<UserFriendshipService>();
+
   UserProfile? userProfile;
+  List<UserFriendship>? userFriendships;
   StreakDto? streakDto;
 
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
+    _loadUserFriendships();
     _getStreak();
   }
 
@@ -33,6 +39,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final profile = await userService.getUserProfile();
     setState(() {
       userProfile = profile;
+    });
+  }
+
+  Future<void> _loadUserFriendships() async {
+    final friendships = await userFriendshipService.getAllFriendships();
+    setState(() {
+      userFriendships = friendships;
     });
   }
 
@@ -146,17 +159,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 10),
               Expanded(
                 child: userProfile != null &&
-                        userProfile!.friends != null &&
-                        userProfile!.friends!.isNotEmpty
+                        userFriendships != null &&
+                        userFriendships!.isNotEmpty
                     ? ListView.builder(
-                        itemCount: userProfile!.friends!.length,
+                        itemCount: userFriendships!.length,
                         itemBuilder: (context, index) {
-                          final friend = userProfile!.friends![index];
+                          var friend = userFriendships![index].friendshipReceiver;
+                          if(friend != null && userProfile!.id == friend.id){
+                            friend = userFriendships![index].friendshipInitiator;
+                          }
                           return ListTile(
                             leading: CircleAvatar(
                               backgroundColor: Colors.grey[300],
                               child: Text(
-                                friend.fullName[0].toUpperCase(),
+                                friend!.fullName[0].toUpperCase(),
                                 style: const TextStyle(color: Colors.black),
                               ),
                             ),

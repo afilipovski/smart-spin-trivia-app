@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:trivia_app/core/domain/models/user_friendship.dart';
 import 'package:trivia_app/core/domain/models/user_profile.dart';
 import 'package:trivia_app/core/services/logger_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
@@ -14,14 +15,23 @@ class AddFriendScreen extends StatefulWidget {
 
 class _AddFriendScreenState extends State<AddFriendScreen> {
   final TextEditingController _friendNameController = TextEditingController();
-  final UserFriendshipService _userFriendshipService = getIt<UserFriendshipService>();
+  final UserFriendshipService _userFriendshipService =
+      getIt<UserFriendshipService>();
   final LoggerService _loggerService = getIt<LoggerService>();
-  final List<String> _friends = List.empty(growable: true);
+
+  final List<UserProfile> _friends = [];
+  final List<UserProfile> _searchResults = [];
+  final List<UserFriendship> _friendRequests = [];
 
   Timer? _debounce;
-  List<UserProfile> _searchResults = List.empty(growable: true);
   bool _isSearching = false;
-  String _addLabel = "Add";
+  bool _isLoadingRequests = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFriendRequests();
+  }
 
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -33,7 +43,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
   Future<void> _searchUsers(String query) async {
     if (query.isEmpty) {
       setState(() {
-        _searchResults = [];
+        _searchResults.clear();
       });
       return;
     }
@@ -43,13 +53,13 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
     });
 
     try {
-      final response = await _userFriendshipService.getListOfUsers(query);
-
+      final users = await _userFriendshipService.getListOfUsers(query);
       setState(() {
-        _searchResults = response;
-        _isSearching = false;
+        _searchResults
+          ..clear()
+          ..addAll(users);
       });
-    } on Exception catch (e) {
+    } catch (e) {
       _loggerService.logError('Error occurred: $e');
     } finally {
       setState(() {
@@ -58,25 +68,51 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
     }
   }
 
-  void _addFriend(String userId) async {
-    // if (!_friends.contains(fullName)) {
-      try{
-        await _userFriendshipService.sendFriendRequest(userId);
-      }catch(e){
-        _loggerService.logError('$e');
-      }
-
+  Future<void> _addFriend(String userId) async {
+    try {
+      await _userFriendshipService.sendFriendRequest(userId);
       setState(() {
-        // _friends.add(fullName);
-        _searchResults = [];
         _friendNameController.clear();
-        _addLabel = "Pending";
+        _searchResults.clear();
       });
-    // }
+    } catch (e) {
+      _loggerService.logError('$e');
+    }
   }
 
-  void dismissKeyboard(BuildContext buildContext) {
-    final FocusScopeNode currentFocus = FocusScope.of(buildContext);
+  Future<void> _loadFriendRequests() async {
+    try {
+      final requests = await _userFriendshipService.getAllFriendRequests();
+      setState(() {
+        _friendRequests
+          ..clear()
+          ..addAll(requests);
+      });
+    } catch (e) {
+      _loggerService.logError('Error loading friend requests: $e');
+    } finally {
+      setState(() {
+        _isLoadingRequests = false;
+      });
+    }
+  }
+
+  Future<void> _acceptFriendRequest(String userId) async {
+    try {
+      final friendShip =
+          await _userFriendshipService.acceptFriendRequest(userId);
+      setState(() {
+        _friendRequests.removeWhere(
+            (user) => user.friendshipInitiator!.id == userId); //revisit
+        _friends.add(friendShip.friendshipReceiver!);
+      });
+    } catch (e) {
+      _loggerService.logError('Failed to accept request: $e');
+    }
+  }
+
+  void dismissKeyboard(BuildContext context) {
+    final FocusScopeNode currentFocus = FocusScope.of(context);
     if (!currentFocus.hasPrimaryFocus) {
       currentFocus.unfocus();
     }
@@ -137,30 +173,69 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                   const Center(child: CircularProgressIndicator())
                 else if (_searchResults.isNotEmpty)
                   Column(
-                    children: _searchResults
-                        .map(
-                          (user) => ListTile(
-                            title: Text(user.fullName),
-                            trailing: ElevatedButton(
-                              onPressed: () => _addFriend(user.id),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF8668FF),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 6,
-                                  horizontal: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: Text(
-                                _addLabel,
-                                style: const TextStyle(color: Colors.white),
-                              ),
+                    children: _searchResults.map((user) {
+                      return ListTile(
+                        title: Text(user.fullName),
+                        trailing: ElevatedButton(
+                          onPressed: () => _addFriend(user.id),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF8668FF),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 6,
+                              horizontal: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                        )
-                        .toList(),
+                          child: const Text(
+                            "Add",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                const SizedBox(height: 20),
+                const Divider(),
+                Text(
+                  "Friend Requests",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                if (_isLoadingRequests)
+                  const Center(child: CircularProgressIndicator())
+                else if (_friendRequests.isEmpty)
+                  const Text("No friend requests.")
+                else
+                  Column(
+                    children: _friendRequests.map((user) {
+                      return ListTile(
+                        title: Text(user.friendshipInitiator?.fullName ?? ''),
+                        trailing: ElevatedButton(
+                          onPressed: () => _acceptFriendRequest(
+                              user.friendshipInitiatorId ?? ''),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            "Accept",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 const SizedBox(height: 20),
                 const Divider(),
@@ -178,18 +253,19 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                       ? ListView.builder(
                           itemCount: _friends.length,
                           itemBuilder: (context, index) {
+                            final user = _friends[index];
                             return ListTile(
                               leading: CircleAvatar(
                                 backgroundColor: const Color(0xFF8668FF),
                                 child: Text(
-                                  _friends[index][0].toUpperCase(),
+                                  user.fullName[0].toUpperCase(),
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
-                              title: Text(_friends[index]),
+                              title: Text(user.fullName),
                             );
                           },
                         )

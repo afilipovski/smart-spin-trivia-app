@@ -9,19 +9,17 @@ class UserProfile extends Equatable {
   final String email;
   final String fullName;
   final DateTime birthDate;
-  final List<UserProfile>? friends;
-  final int streak;
+  final int? streak;
   final DateTime? streakLastExtended;
 
   const UserProfile(
-    this.friends, 
     this.streakLastExtended,
+    this.streak,
     {
     required this.id,
     required this.email,
     required this.fullName,
     required this.birthDate,
-    required this.streak,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>
