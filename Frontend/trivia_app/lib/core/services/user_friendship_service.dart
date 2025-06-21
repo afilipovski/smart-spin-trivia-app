@@ -15,8 +15,12 @@ class UserFriendshipService {
   Future<List<UserProfile>> getListOfUsers(String searchQuery) async {
     final response = await _client.get('user-profile?fullName=$searchQuery')
         as List<dynamic>;
+
+    final currentUserId = authService.getCurrentUser()!.uid;
+
     return response
         .map((json) => UserProfile.fromJson(json as Map<String, dynamic>))
+        .where((user) => user.id != currentUserId)
         .toList();
   }
 
