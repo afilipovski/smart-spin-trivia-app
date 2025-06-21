@@ -5,7 +5,9 @@ import com.example.smartspinapi.model.dto.AnswerQuestionResponseDTO;
 import com.example.smartspinapi.model.dto.CreateQuizSessionDTO;
 import com.example.smartspinapi.model.entity.QuizSession;
 import com.example.smartspinapi.model.entity.UserProfile;
+import com.example.smartspinapi.model.exception.UserIsNotMultiplayerQuizLeaderException;
 import com.example.smartspinapi.resolvers.TriviaUser;
+import com.example.smartspinapi.service.MultiplayerQuizSessionService;
 import com.example.smartspinapi.service.QuizSessionService;
 import com.example.smartspinapi.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.time.ZonedDateTime;
 public class QuizSessionController {
     private final QuizSessionService quizSessionService;
     private final UserProfileService userProfileService;
+    private final MultiplayerQuizSessionService multiplayerQuizSessionService;
 
     @PostMapping
     public QuizSession createQuizSession(@RequestBody CreateQuizSessionDTO createQuizSessionDTO, @TriviaUser UserProfile userProfile) {
@@ -44,5 +47,15 @@ public class QuizSessionController {
     @GetMapping()
     public QuizSession getQuizSession(@TriviaUser UserProfile userProfile) {
         return quizSessionService.getQuizSession(userProfile);
+    }
+
+    @PostMapping("/join/{joinCode}")
+    public QuizSession joinQuizSession(@TriviaUser UserProfile userProfile, @PathVariable String joinCode) {
+        return quizSessionService.joinQuizSession(userProfile, joinCode);
+    }
+
+    @PostMapping("/start/{joinCode}")
+    public void startQuizSession(@TriviaUser UserProfile userProfile) throws UserIsNotMultiplayerQuizLeaderException {
+        multiplayerQuizSessionService.startGame(userProfile);
     }
 }
