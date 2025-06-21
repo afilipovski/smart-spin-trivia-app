@@ -164,6 +164,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ? ListView.builder(
                         itemCount: userFriendships!.length,
                         itemBuilder: (context, index) {
+                          if(!userFriendships![index].friendshipAccepted){
+                            return null;
+                          }
                           var friend = userFriendships![index].friendshipReceiver;
                           if(friend != null && userProfile!.id == friend.id){
                             friend = userFriendships![index].friendshipInitiator;

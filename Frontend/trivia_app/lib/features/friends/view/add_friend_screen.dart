@@ -19,7 +19,6 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
       getIt<UserFriendshipService>();
   final LoggerService _loggerService = getIt<LoggerService>();
 
-  final List<UserProfile> _friends = [];
   final List<UserProfile> _searchResults = [];
   final List<UserFriendship> _friendRequests = [];
 
@@ -72,7 +71,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
     try {
       await _userFriendshipService.sendFriendRequest(userId);
       setState(() {
-        _friendNameController.clear();
+        // _friendNameController.clear();
         _searchResults.clear();
       });
     } catch (e) {
@@ -99,12 +98,10 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
 
   Future<void> _acceptFriendRequest(String userId) async {
     try {
-      final friendShip =
-          await _userFriendshipService.acceptFriendRequest(userId);
+      await _userFriendshipService.acceptFriendRequest(userId);
       setState(() {
         _friendRequests.removeWhere(
-            (user) => user.friendshipInitiator!.id == userId); //revisit
-        _friends.add(friendShip.friendshipReceiver!);
+            (user) => user.friendshipInitiatorId == userId);
       });
     } catch (e) {
       _loggerService.logError('Failed to accept request: $e');
@@ -214,8 +211,9 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                 else
                   Column(
                     children: _friendRequests.map((user) {
+                      final initiator = user.friendshipInitiator;
                       return ListTile(
-                        title: Text(user.friendshipInitiator?.fullName ?? ''),
+                        title: Text(initiator?.fullName ?? ''),
                         trailing: ElevatedButton(
                           onPressed: () => _acceptFriendRequest(
                               user.friendshipInitiatorId ?? ''),
@@ -237,45 +235,6 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                       );
                     }).toList(),
                   ),
-                const SizedBox(height: 20),
-                const Divider(),
-                Text(
-                  "Friends",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: _friends.isNotEmpty
-                      ? ListView.builder(
-                          itemCount: _friends.length,
-                          itemBuilder: (context, index) {
-                            final user = _friends[index];
-                            return ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: const Color(0xFF8668FF),
-                                child: Text(
-                                  user.fullName[0].toUpperCase(),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              title: Text(user.fullName),
-                            );
-                          },
-                        )
-                      : const Center(
-                          child: Text(
-                            "No friends added yet.",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ),
-                ),
               ],
             ),
           ),
