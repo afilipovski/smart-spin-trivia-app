@@ -21,6 +21,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   UserProfile? userProfile;
   List<UserFriendship>? userFriendships;
+  List<UserFriendship> _friendRequests = [];
   StreakDto? streakDto;
 
   bool _isLoading = true;
@@ -36,6 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await Future.wait([
       _loadUserProfile(),
       _loadUserFriendships(),
+      _loadFriendRequests(),
       _getStreak(),
     ]);
     setState(() => _isLoading = false);
@@ -48,6 +50,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  Future<void> _getStreak() async {
+    final streak = await userService.getStreak();
+    setState(() {
+      streakDto = streak;
+    });
+  }
+
   Future<void> _loadUserFriendships() async {
     final friendships = await userFriendshipService.getAllFriendships();
     setState(() {
@@ -55,11 +64,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  Future<void> _getStreak() async {
-    final streak = await userService.getStreak();
+  Future<void> _loadFriendRequests() async {
+    final requests = await userFriendshipService.getAllFriendRequests();
     setState(() {
-      streakDto = streak;
+      _friendRequests = requests;
     });
+  }
+
+  Future<void> _acceptFriendRequest(String userId) async {
+    await userFriendshipService.acceptFriendRequest(userId);
+    await _loadFriendRequests();
+    await _loadUserFriendships();
   }
 
   @override
@@ -93,26 +108,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           CircleAvatar(
                             radius: 50,
                             backgroundColor: Colors.grey[300],
-                            child: const Icon(
-                              Icons.person,
-                              size: 50,
-                              color: Colors.black,
-                            ),
+                            child: const Icon(Icons.person, size: 50, color: Colors.black),
                           ),
                           const SizedBox(height: 10),
                           Text(
                             userProfile?.fullName ?? '',
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                           ),
                           Text(
                             userProfile?.email ?? '',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                            ),
+                            style: const TextStyle(fontSize: 16, color: Colors.grey),
                           ),
                         ],
                       ),
@@ -150,6 +155,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                     const SizedBox(height: 20),
+                    if (_friendRequests.isNotEmpty) ...[
+                      const Divider(),
+                      Text(
+                        "Pending Friend Requests",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Column(
+                        children: _friendRequests.map((user) {
+                          final initiator = user.friendshipInitiator;
+                          return ListTile(
+                            title: Text(initiator?.fullName ?? ''),
+                            trailing: ElevatedButton(
+                              onPressed: () => _acceptFriendRequest(user.friendshipInitiatorId ?? ''),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: const Text("Accept", style: TextStyle(color: Colors.white)),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+
                     const Divider(),
                     Text(
                       "Friends and their streaks",
@@ -193,9 +231,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 );
                               },
                             )
-                          : const Center(
-                              child: Text("No friends yet."),
-                            ),
+                          : const Center(child: Text("No friends yet.")),
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -209,20 +245,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF8668FF),
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 16.0,
-                                horizontal: 40.0,
-                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
                             ),
                             child: const Text(
                               'Add Friends',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
+                              style: TextStyle(color: Colors.white, fontSize: 16),
                             ),
                           ),
                         ),
