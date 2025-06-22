@@ -1,3 +1,5 @@
+import 'package:trivia_app/core/domain/exceptions/friend_request_exception.dart';
+import 'package:trivia_app/core/domain/exceptions/http_response_exception.dart';
 import 'package:trivia_app/core/domain/models/user_friendship.dart';
 import 'package:trivia_app/core/domain/models/user_profile.dart';
 import 'package:trivia_app/core/services/auth_service.dart';
@@ -33,10 +35,18 @@ class UserFriendshipService {
   }
 
   Future<UserFriendship> sendFriendRequest(String otherUserId) async {
+  try {
     final response =
         await _client.post('user-friendship/request/$otherUserId', '');
     return UserFriendship.fromJson(response);
+  } on HttpResponseException catch (e) {
+    if (e.statusCode == 422) {
+      throw FriendRequestException("You are already friends with this person.");
+    }
+    rethrow;
   }
+}
+
 
   Future<List<UserFriendship>> getAllFriendRequests() async {
     final response = await _client.get('user-friendship/requests');

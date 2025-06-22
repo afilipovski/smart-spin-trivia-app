@@ -6,6 +6,14 @@ import 'package:trivia_app/core/services/logger_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
 import 'package:trivia_app/core/services/user_friendship_service.dart';
 
+class FriendRequestException implements Exception {
+  final String message;
+  FriendRequestException(this.message);
+
+  @override
+  String toString() => message;
+}
+
 class AddFriendScreen extends StatefulWidget {
   const AddFriendScreen({super.key});
 
@@ -75,8 +83,24 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
         _friendNameController.clear();
       });
     } catch (e) {
-      _loggerService.logError('$e');
+      _showErrorDialog('You already friend with this person');
     }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Friend Request"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _loadFriendRequests() async {
