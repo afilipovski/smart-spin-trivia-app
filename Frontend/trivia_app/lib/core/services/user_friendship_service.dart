@@ -35,18 +35,18 @@ class UserFriendshipService {
   }
 
   Future<UserFriendship> sendFriendRequest(String otherUserId) async {
-  try {
-    final response =
-        await _client.post('user-friendship/request/$otherUserId', '');
-    return UserFriendship.fromJson(response);
-  } on HttpResponseException catch (e) {
-    if (e.statusCode == 422) {
-      throw FriendRequestException("You are already friends with this person.");
+    try {
+      final response =
+          await _client.post('user-friendship/request/$otherUserId', '');
+      return UserFriendship.fromJson(response);
+    } on HttpResponseException catch (e) {
+      if (e.statusCode == 422) {
+        throw FriendRequestException(
+            "You are already friends with this person.");
+      }
+      rethrow;
     }
-    rethrow;
   }
-}
-
 
   Future<List<UserFriendship>> getAllFriendRequests() async {
     final response = await _client.get('user-friendship/requests');
@@ -60,5 +60,11 @@ class UserFriendshipService {
     final response =
         await _client.patch('user-friendship/accept/$otherUserId', '');
     return UserFriendship.fromJson(response);
+  }
+
+  Future<List<UserProfile>> getMutualFriends(String otherUserId) async {
+    final response = await _client.get('user-friendship/mutual/$otherUserId');
+    final List<dynamic> data = response as List<dynamic>;
+    return data.map((json) => UserProfile.fromJson(json)).toList();
   }
 }

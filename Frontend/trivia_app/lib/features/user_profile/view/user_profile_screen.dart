@@ -7,6 +7,7 @@ import 'package:trivia_app/core/services/user_friendship_service.dart';
 import 'package:trivia_app/core/services/user_service.dart';
 import 'package:trivia_app/features/friends/view/add_friend_screen.dart';
 import 'package:trivia_app/features/quiz/view/quiz_screen.dart';
+import 'package:trivia_app/features/user_profile/view/friend_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,7 +18,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final UserService userService = getIt<UserService>();
-  final UserFriendshipService userFriendshipService = getIt<UserFriendshipService>();
+  final UserFriendshipService userFriendshipService =
+      getIt<UserFriendshipService>();
 
   UserProfile? userProfile;
   List<UserFriendship>? userFriendships;
@@ -108,16 +110,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           CircleAvatar(
                             radius: 50,
                             backgroundColor: Colors.grey[300],
-                            child: const Icon(Icons.person, size: 50, color: Colors.black),
+                            child: const Icon(Icons.person,
+                                size: 50, color: Colors.black),
                           ),
                           const SizedBox(height: 10),
                           Text(
                             userProfile?.fullName ?? '',
-                            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
                           ),
                           Text(
                             userProfile?.email ?? '',
-                            style: const TextStyle(fontSize: 16, color: Colors.grey),
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.grey),
                           ),
                         ],
                       ),
@@ -146,7 +151,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        const Icon(Icons.local_fire_department, color: Colors.orange),
+                        const Icon(Icons.local_fire_department,
+                            color: Colors.orange),
                         const SizedBox(width: 10),
                         Text(
                           "Daily Streak: ${userProfile?.streak} Days",
@@ -172,22 +178,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           return ListTile(
                             title: Text(initiator?.fullName ?? ''),
                             trailing: ElevatedButton(
-                              onPressed: () => _acceptFriendRequest(user.friendshipInitiatorId ?? ''),
+                              onPressed: () => _acceptFriendRequest(
+                                  user.friendshipInitiatorId ?? ''),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 6),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              child: const Text("Accept", style: TextStyle(color: Colors.white)),
+                              child: const Text("Accept",
+                                  style: TextStyle(color: Colors.white)),
                             ),
                           );
                         }).toList(),
                       ),
                       const SizedBox(height: 10),
                     ],
-
                     const Divider(),
                     Text(
                       "Friends and their streaks",
@@ -199,31 +207,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 10),
                     Expanded(
-                      child: userFriendships != null && userFriendships!.isNotEmpty
+                      child: userFriendships != null &&
+                              userFriendships!.isNotEmpty
                           ? ListView.builder(
                               itemCount: userFriendships!.length,
                               itemBuilder: (context, index) {
                                 final friendship = userFriendships![index];
-                                if (!friendship.friendshipAccepted) return const SizedBox.shrink();
+                                if (!friendship.friendshipAccepted)
+                                  return const SizedBox.shrink();
 
                                 var friend = friendship.friendshipReceiver;
-                                if (friend != null && friend.id == userProfile?.id) {
+                                if (friend != null &&
+                                    friend.id == userProfile?.id) {
                                   friend = friendship.friendshipInitiator;
                                 }
 
                                 return ListTile(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => FriendProfileScreen(
+                                            friendProfile: friend!),
+                                      ),
+                                    );
+                                  },
                                   leading: CircleAvatar(
                                     backgroundColor: Colors.grey[300],
                                     child: Text(
                                       friend!.fullName[0].toUpperCase(),
-                                      style: const TextStyle(color: Colors.black),
+                                      style:
+                                          const TextStyle(color: Colors.black),
                                     ),
                                   ),
                                   title: Text(friend.fullName),
                                   trailing: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Icon(Icons.local_fire_department, color: Colors.orange),
+                                      const Icon(Icons.local_fire_department,
+                                          color: Colors.orange),
                                       const SizedBox(width: 5),
                                       Text("${friend.streak}"),
                                     ],
@@ -240,19 +262,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (context) => const AddFriendScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AddFriendScreen()),
                               );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF8668FF),
-                              padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 16.0, horizontal: 40.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
                             ),
                             child: const Text(
                               'Add Friends',
-                              style: TextStyle(color: Colors.white, fontSize: 16),
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16),
                             ),
                           ),
                         ),
