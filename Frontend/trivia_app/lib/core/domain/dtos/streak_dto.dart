@@ -6,10 +6,10 @@ part 'streak_dto.g.dart';
 @JsonSerializable()
 class StreakDto extends Equatable {
   final int streak;
-  final DateTime streakLastExtended;
+  final DateTime? streakLastExtended;
   final bool shouldReset;
 
-  const StreakDto({required this.streak, required this.streakLastExtended, required this.shouldReset});
+  const StreakDto(this.streakLastExtended, {required this.streak, required this.shouldReset});
 
   factory StreakDto.fromJson(Map<String, dynamic> json) =>
       _$StreakDtoFromJson(json);

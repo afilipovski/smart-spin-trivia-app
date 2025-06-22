@@ -46,6 +46,19 @@ class HttpService {
     return _decodeBody(response.body);
   }
 
+  Future<dynamic> patch(String path, Object requestBody) async {
+    final endpoint = Uri.parse(baseApiUrl + path);
+    final headers = await _buildHeaders(); 
+
+    final response = await http.patch(
+      endpoint,
+      headers: headers,
+      body: jsonEncode(requestBody),
+    );
+    response.ensureSuccessStatusCode();
+    return _decodeBody(response.body);
+  }
+
   Future<dynamic> put(String path, Object requestBody) async {
     final endpoint = Uri.parse(baseApiUrl + path);
     final headers = await _buildHeaders(); 
