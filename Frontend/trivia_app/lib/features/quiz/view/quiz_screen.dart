@@ -1,8 +1,8 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:html_unescape/html_unescape.dart';
 import 'package:trivia_app/core/domain/dtos/streak_dto.dart';
 import 'package:trivia_app/core/services/auth_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
@@ -14,7 +14,6 @@ import 'package:trivia_app/features/quiz/bloc/quiz_bloc.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_event.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_state.dart';
 import '../../user_profile/view/user_profile_screen.dart';
-import 'package:html_unescape/html_unescape.dart';
 
 class QuizScreen extends StatefulWidget {
   QuizScreen({super.key});
@@ -28,15 +27,12 @@ class QuizScreen extends StatefulWidget {
 
 class _QuizScreenState extends State<QuizScreen> {
   StreakDto? streak;
+  bool _streakLoaded = false;
 
   @override
   void initState() {
     super.initState();
-
-    BlocProvider.of<QuizBloc>(context).add(
-      QuizInitialLoad(),
-    );
-
+    BlocProvider.of<QuizBloc>(context).add(QuizInitialLoad());
     _getUserStreak();
   }
 
@@ -44,13 +40,14 @@ class _QuizScreenState extends State<QuizScreen> {
     final streakDto = await widget.userService.getStreak();
     setState(() {
       streak = streakDto;
+      _streakLoaded = true;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    Random random = Random();
-    final unescape = HtmlUnescape();
+    final Random random = Random();
+    final HtmlUnescape unescape = HtmlUnescape();
 
     return Scaffold(
       appBar: AppBar(
@@ -63,9 +60,7 @@ class _QuizScreenState extends State<QuizScreen> {
             widget.authService.signOut();
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => const LoginScreen(),
-              ),
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
             );
           },
         ),
@@ -75,17 +70,26 @@ class _QuizScreenState extends State<QuizScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const ProfileScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
               );
             },
           ),
         ],
       ),
       body: BlocConsumer<QuizBloc, QuizState>(
-        buildWhen: (previous, current) => previous is! QuizLoadSuccess,
-        builder: (BuildContext context, QuizState state) {
+        buildWhen: (previous, current) => current is! QuizCardSelected,
+        builder: (context, state) {
+          final isQuizLoaded = state is QuizLoadSuccess;
+          final isReady = isQuizLoaded && _streakLoaded;
+
+          if (!isReady) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          final quizState = state as QuizLoadSuccess;
+
           return SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -99,7 +103,7 @@ class _QuizScreenState extends State<QuizScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 12.0),
                           child: Text(
-                            '🔥 ${streak?.streak ?? '0'}',
+                            '🔥 ${streak?.streak}',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -124,7 +128,6 @@ class _QuizScreenState extends State<QuizScreen> {
                       padding: const EdgeInsets.only(left: 20.0, bottom: 16.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Let\'s play',
@@ -139,50 +142,34 @@ class _QuizScreenState extends State<QuizScreen> {
                         ],
                       ),
                     ),
-                    if (state is QuizLoadSuccess)
-                      Column(
-                        children: state.quizzes.map(
-                          (quiz) {
-                            final unescapedQuestionContent = unescape.convert(quiz.category?.name ?? "");
-                            final GradientColor color =
-                                GradientColor.values[random.nextInt(
-                              GradientColor.values.length,
-                            )];
-                            return ColoredCard(
-                              isFinished: true,
-                              categoryName: unescapedQuestionContent,
-                              color: GradientColor.values[
-                                  random.nextInt(GradientColor.values.length)],
-                              onSelectTap: () {
-                                BlocProvider.of<QuizBloc>(context).add(
-                                  QuizSelected(quiz, color),
-                                );
-                              },
+                    Column(
+                      children: quizState.quizzes.map((quiz) {
+                        final unescapedCategory = unescape.convert(
+                          quiz.category?.name ?? "",
+                        );
+                        final GradientColor color = GradientColor
+                            .values[random.nextInt(GradientColor.values.length)];
+
+                        return ColoredCard(
+                          isFinished: true,
+                          categoryName: unescapedCategory,
+                          color: color,
+                          onSelectTap: () {
+                            BlocProvider.of<QuizBloc>(context).add(
+                              QuizSelected(quiz, color),
                             );
                           },
-                        ).toList(),
-                      )
-                    // else if (state is QuizLoadFailed)
-                    //   const QuizStateUpdatePage(
-                    //     emojiToBeDisplayed: '😭',
-                    //     messageToBeDisplayed: 'Something went wrong!',
-                    //   )
-                    // else if (state is QuizLoadInProgress)
-                    //   const QuizStateUpdatePage(
-                    //     emojiToBeDisplayed: '🛸',
-                    //     messageToBeDisplayed: 'Loading Categories...',
-                    //   ),
+                        );
+                      }).toList(),
+                    ),
                   ],
                 ),
               ),
             ),
           );
         },
-        listener: (BuildContext context, QuizState state) {
+        listener: (context, state) {
           if (state is QuizCardSelected) {
-            BlocProvider.of<QuizBloc>(context).add(
-              QuizSelected(state.quiz, state.color),
-            );
             Navigator.push(
               context,
               MaterialPageRoute(
