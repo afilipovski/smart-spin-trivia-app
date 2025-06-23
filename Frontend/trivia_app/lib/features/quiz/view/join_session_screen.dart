@@ -48,15 +48,10 @@ class _JoinSessionScreenState extends State<JoinSessionScreen> {
     } on HttpResponseException catch (e) {
       if (!mounted) return;
 
-      if (e.statusCode == 404) {
+      if (e.statusCode == 404 || e.statusCode == 422) {
         _showErrorDialog(
           "Oops!",
           "We couldn't find a game with that code. Double-check and try again!",
-        );
-      } else if (e.statusCode == 422) {
-        _showErrorDialog(
-          "Already Joined",
-          "You have already joined this session.",
         );
       } else {
         _showErrorDialog(
