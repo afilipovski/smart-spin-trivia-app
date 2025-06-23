@@ -8,6 +8,42 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:308117439977:android:149b23bc5ef745ad73f778",
+        "android_client_info": {
+          "package_name": "com.example.trivia_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "308117439977-17dto2p57dd79jat420j28gj8jugohlp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmCTp_cTWtpOFRIW-v9N0safUM_qIpCXI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "308117439977-17dto2p57dd79jat420j28gj8jugohlp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "308117439977-hredna3g3v07vmarbddbjt9qqae7auv5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.smart.spin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:308117439977:android:02e8733af41fa32073f778",
         "android_client_info": {
           "package_name": "com.smart.spin"

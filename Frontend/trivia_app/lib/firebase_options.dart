@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
 
     switch (defaultTargetPlatform) {
@@ -29,15 +26,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -52,28 +43,55 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDmCTp_cTWtpOFRIW-v9N0safUM_qIpCXI',
-    appId: '1:308117439977:android:02e8733af41fa32073f778',
+    appId: '1:308117439977:android:149b23bc5ef745ad73f778',
     messagingSenderId: '308117439977',
     projectId: 'smart-spin-83f3e',
-    androidClientId: 
-      '308117439977-380rqfv11tbniib2knsod2fhdgpu7gnm.apps.googleusercontent.com',
-    iosClientId: 
-      '308117439977-hredna3g3v07vmarbddbjt9qqae7auv5.apps.googleusercontent.com',
     databaseURL: 'https://smart-spin-83f3e-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'smart-spin-83f3e.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDUiVrA-gi7R4YNKmrl2wZlRIMdCSjIjv4',
-    appId: '1:308117439977:ios:a2e2c9c5964e7b7c73f778',
+    appId: '1:308117439977:ios:bac075149d77f0f773f778',
     messagingSenderId: '308117439977',
     projectId: 'smart-spin-83f3e',
     databaseURL: 'https://smart-spin-83f3e-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'smart-spin-83f3e.firebasestorage.app',
-    androidClientId:
-        '308117439977-380rqfv11tbniib2knsod2fhdgpu7gnm.apps.googleusercontent.com',
-    iosClientId:
-        '308117439977-hredna3g3v07vmarbddbjt9qqae7auv5.apps.googleusercontent.com',
-    iosBundleId: 'com.smart.spin',
+    androidClientId: '308117439977-380rqfv11tbniib2knsod2fhdgpu7gnm.apps.googleusercontent.com',
+    iosClientId: '308117439977-tqbk62ih53p1uubfoj1a3er472mg2gsu.apps.googleusercontent.com',
+    iosBundleId: 'com.example.triviaApp',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyB7RDRd_9pWF6XZ6DZ5lNIbnKYi360eyvI',
+    appId: '1:308117439977:web:63ba2a59c8aa78b573f778',
+    messagingSenderId: '308117439977',
+    projectId: 'smart-spin-83f3e',
+    authDomain: 'smart-spin-83f3e.firebaseapp.com',
+    databaseURL: 'https://smart-spin-83f3e-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'smart-spin-83f3e.firebasestorage.app',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyDUiVrA-gi7R4YNKmrl2wZlRIMdCSjIjv4',
+    appId: '1:308117439977:ios:bac075149d77f0f773f778',
+    messagingSenderId: '308117439977',
+    projectId: 'smart-spin-83f3e',
+    databaseURL: 'https://smart-spin-83f3e-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'smart-spin-83f3e.firebasestorage.app',
+    androidClientId: '308117439977-380rqfv11tbniib2knsod2fhdgpu7gnm.apps.googleusercontent.com',
+    iosClientId: '308117439977-tqbk62ih53p1uubfoj1a3er472mg2gsu.apps.googleusercontent.com',
+    iosBundleId: 'com.example.triviaApp',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyB7RDRd_9pWF6XZ6DZ5lNIbnKYi360eyvI',
+    appId: '1:308117439977:web:d9c40e5c133f314173f778',
+    messagingSenderId: '308117439977',
+    projectId: 'smart-spin-83f3e',
+    authDomain: 'smart-spin-83f3e.firebaseapp.com',
+    databaseURL: 'https://smart-spin-83f3e-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'smart-spin-83f3e.firebasestorage.app',
+  );
+
 }
