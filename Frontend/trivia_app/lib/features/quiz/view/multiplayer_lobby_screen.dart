@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:trivia_app/core/domain/models/quiz.dart';
+import 'package:trivia_app/core/services/auth_service.dart';
 import 'package:trivia_app/core/services/quiz_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 class MultiplayerLobbyScreen extends StatefulWidget {
   final String joinCode;
-  final String currentUserId;
+  final Quiz quiz;
 
   const MultiplayerLobbyScreen({
     super.key,
     required this.joinCode,
-    required this.currentUserId,
+    required this.quiz,
   });
 
   @override
@@ -22,6 +24,7 @@ class _MultiplayerLobbyScreenState extends State<MultiplayerLobbyScreen> {
   late Stream<DatabaseEvent> sessionStream;
 
   final QuizService quizService = getIt<QuizService>();
+  final AuthService authService = getIt<AuthService>();
 
   String? leaderId;
   List<String> players = [];
@@ -53,8 +56,32 @@ class _MultiplayerLobbyScreenState extends State<MultiplayerLobbyScreen> {
     });
   }
 
-  Future<void> _startGame() async {
-    await quizService.startQuizSession(widget.joinCode);
+  Future<void> _startGame(String joinCode) async {
+    try {
+      await quizService.startQuizSession(joinCode);
+    } catch (e) {
+      if (!mounted) return;
+      _showErrorDialog(
+        "Oops!",
+        "Only the player who created this session can start the game.",
+      );
+    }
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -65,14 +92,17 @@ class _MultiplayerLobbyScreenState extends State<MultiplayerLobbyScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 20),
-          Text("Join Code: ${widget.joinCode}", style: const TextStyle(fontSize: 20)),
+          Text("Join Code: ${widget.joinCode}",
+              style: const TextStyle(fontSize: 20)),
           const SizedBox(height: 20),
           const Text("Players:", style: TextStyle(fontSize: 18)),
           for (var player in players) Text(player),
           const Spacer(),
-          if (widget.currentUserId == leaderId)
+          if (authService.getCurrentUser()!.uid == leaderId)
             ElevatedButton(
-              onPressed: _startGame,
+              onPressed: () async {
+                await _startGame(widget.joinCode);
+              },
               child: const Text("Start Game"),
             ),
           const SizedBox(height: 20),

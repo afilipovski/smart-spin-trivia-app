@@ -1,66 +1,121 @@
 import 'package:flutter/material.dart';
+import 'package:trivia_app/core/domain/exceptions/http_response_exception.dart';
+import 'package:trivia_app/core/domain/models/quiz.dart';
 import 'package:trivia_app/core/services/quiz_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
-import 'package:trivia_app/features/quiz/view/lobby_screen.dart';
+import 'package:trivia_app/features/quiz/view/multiplayer_lobby_screen.dart';
 
 class JoinSessionScreen extends StatefulWidget {
-  final String userId;
+  final Quiz quiz;
+  final String joinCode;
 
-  const JoinSessionScreen({super.key, required this.userId});
+  const JoinSessionScreen({
+    super.key,
+    required this.joinCode,
+    required this.quiz,
+  });
 
   @override
   State<JoinSessionScreen> createState() => _JoinSessionScreenState();
 }
 
 class _JoinSessionScreenState extends State<JoinSessionScreen> {
-  final _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   final QuizService quizService = getIt<QuizService>();
-  bool _loading = false;
 
   Future<void> _joinSession() async {
-    setState(() => _loading = true);
     final code = _controller.text.trim();
 
-    final success = await quizService.joinQuizSession(code); 
+    if (code.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter a join code")),
+      );
+      return;
+    }
 
-    if (true) {
+    try {
+      await quizService.joinQuizSession(code);
+
+      if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => MultiplayerLobbyScreen(
+            quiz: widget.quiz,
             joinCode: code,
-            currentUserId: widget.userId,
           ),
         ),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to join session")),
+    } on HttpResponseException catch (e) {
+      if (!mounted) return;
+
+      if (e.statusCode == 404) {
+        _showErrorDialog(
+          "Oops!",
+          "We couldn't find a game with that code. Double-check and try again!",
+        );
+      } else if (e.statusCode == 422) {
+        _showErrorDialog(
+          "Already Joined",
+          "You have already joined this session.",
+        );
+      } else {
+        _showErrorDialog(
+          "Error",
+          "Something went wrong. Please try again.",
+        );
+      }
+    } catch (_) {
+      if (!mounted) return;
+      _showErrorDialog(
+        "Error",
+        "An unexpected error occurred. Please try again.",
       );
     }
+  }
 
-    setState(() => _loading = false);
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK"),
+          )
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Join a Session")),
+      appBar: AppBar(title: const Text("Join a Game")),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Text("Enter the join code your friend sent you"),
+            const SizedBox(height: 20),
             TextField(
               controller: _controller,
-              decoration: const InputDecoration(labelText: "Enter Join Code"),
+              textAlign: TextAlign.center,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Join Code",
+              ),
             ),
-            const SizedBox(height: 20),
-            _loading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: _joinSession,
-                    child: const Text("Join"),
-                  ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: _joinSession,
+              icon: const Icon(Icons.login),
+              label: const Text("Join"),
+            ),
           ],
         ),
       ),

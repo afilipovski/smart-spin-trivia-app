@@ -59,13 +59,6 @@ class QuizService {
   }
 
   Future<void> startQuizSession(String joinCode) async {
-    try {
-      await _client.post("quiz-session/start/$joinCode", "");
-    } on UserIsNotMultiplayerQuizLeaderException catch (e) {
-      _loggerService.logError('$e');
-    } on Exception catch (e) {
-      _loggerService.logError('$e');
-    }
-    return;
+    await _client.post("quiz-session/start/$joinCode", "");
   }
 }

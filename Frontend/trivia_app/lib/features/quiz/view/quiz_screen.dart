@@ -13,6 +13,8 @@ import 'package:trivia_app/features/questions/view/questions_screen.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_bloc.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_event.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_state.dart';
+import 'package:trivia_app/features/quiz/view/game_mood_selection_screen.dart';
+import 'package:trivia_app/features/quiz/view/multiplayer_session_gateway_screen.dart';
 import '../../user_profile/view/user_profile_screen.dart';
 
 class QuizScreen extends StatefulWidget {
@@ -173,7 +175,7 @@ class _QuizScreenState extends State<QuizScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => QuestionsScreen(
+                builder: (_) => GameModeSelectionScreen(
                   quiz: state.quiz,
                   gradientColor: state.color,
                 ),
