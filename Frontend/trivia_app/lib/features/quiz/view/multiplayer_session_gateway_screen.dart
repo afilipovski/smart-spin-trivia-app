@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:trivia_app/core/domain/models/quiz.dart';
 import 'package:trivia_app/core/services/quiz_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
-import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/quiz/view/join_session_screen.dart';
 import 'package:trivia_app/features/quiz/view/multiplayer_lobby_screen.dart';
 
@@ -19,7 +18,7 @@ class MultiplayerSessionGatewayScreen extends StatelessWidget {
   Future<void> _createSession(BuildContext context) async {
     final session = await quizService.createQuizSession(quiz.id);
 
-    if (!context.mounted) return;
+    // if (!context.mounted) return;
 
     Navigator.pushReplacement(
       context,
@@ -37,7 +36,6 @@ class MultiplayerSessionGatewayScreen extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (_) => JoinSessionScreen(
-          joinCode: '',
           quiz: quiz,
         ),
       ),

@@ -20,8 +20,8 @@ class MultiplayerLobbyScreen extends StatefulWidget {
 }
 
 class _MultiplayerLobbyScreenState extends State<MultiplayerLobbyScreen> {
-  late DatabaseReference sessionRef;
-  late Stream<DatabaseEvent> sessionStream;
+  late final DatabaseReference sessionRef;
+  late final Stream<DatabaseEvent> sessionStream;
 
   final QuizService quizService = getIt<QuizService>();
   final AuthService authService = getIt<AuthService>();
@@ -29,6 +29,9 @@ class _MultiplayerLobbyScreenState extends State<MultiplayerLobbyScreen> {
   String? leaderId;
   List<String> players = [];
   String status = "CREATED";
+  bool isLoading = false;
+
+  bool get isLeader => authService.getCurrentUser()?.uid == leaderId;
 
   @override
   void initState() {
@@ -40,7 +43,9 @@ class _MultiplayerLobbyScreenState extends State<MultiplayerLobbyScreen> {
       final data = event.snapshot.value as Map<dynamic, dynamic>?;
 
       if (data == null) {
-        Navigator.of(context).pop();
+        // if (mounted) {
+        //   Navigator.of(context).popUntil((route) => route.isFirst);
+        // }
         return;
       }
 
@@ -51,20 +56,32 @@ class _MultiplayerLobbyScreenState extends State<MultiplayerLobbyScreen> {
       });
 
       if (status == "ACTIVE") {
-        Navigator.pushReplacementNamed(context, "/quiz-start");
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, "/quiz-start");
+        }
       }
     });
   }
 
   Future<void> _startGame(String joinCode) async {
+    setState(() => isLoading = true);
+
     try {
       await quizService.startQuizSession(joinCode);
     } catch (e) {
       if (!mounted) return;
       _showErrorDialog(
         "Oops!",
-        "Only the player who created this session can start the game.",
+        "Only the person who created this session can start the game.",
       );
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> _endSessionIfLeader() async {
+    if (isLeader) {
+      await quizService.endQuiz();
     }
   }
 
@@ -85,28 +102,56 @@ class _MultiplayerLobbyScreenState extends State<MultiplayerLobbyScreen> {
   }
 
   @override
+  void dispose() {
+    _endSessionIfLeader();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Lobby")),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 20),
-          Text("Join Code: ${widget.joinCode}",
-              style: const TextStyle(fontSize: 20)),
-          const SizedBox(height: 20),
-          const Text("Players:", style: TextStyle(fontSize: 18)),
-          for (var player in players) Text(player),
-          const Spacer(),
-          if (authService.getCurrentUser()!.uid == leaderId)
-            ElevatedButton(
-              onPressed: () async {
-                await _startGame(widget.joinCode);
-              },
-              child: const Text("Start Game"),
+      appBar: AppBar(
+        title: const Text("Lobby"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () async {
+            await _endSessionIfLeader();
+            if (mounted) Navigator.of(context).pop();
+          },
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            Text(
+              "Join Code: ${widget.joinCode}",
+              style: const TextStyle(fontSize: 20),
             ),
-          const SizedBox(height: 20),
-        ],
+            const SizedBox(height: 20),
+            const Text("Players:", style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 8),
+            ...players.map((p) => Text(p)).toList(),
+            const Spacer(),
+            if (isLeader)
+              ElevatedButton.icon(
+                icon: isLoading
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.play_arrow),
+                label: Text(isLoading ? "Starting..." : "Start Game"),
+                onPressed: isLoading ? null : () => _startGame(widget.joinCode),
+              ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }

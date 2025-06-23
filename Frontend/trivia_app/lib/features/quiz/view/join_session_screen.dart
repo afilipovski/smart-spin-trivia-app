@@ -7,11 +7,9 @@ import 'package:trivia_app/features/quiz/view/multiplayer_lobby_screen.dart';
 
 class JoinSessionScreen extends StatefulWidget {
   final Quiz quiz;
-  final String joinCode;
 
   const JoinSessionScreen({
     super.key,
-    required this.joinCode,
     required this.quiz,
   });
 
