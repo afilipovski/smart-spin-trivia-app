@@ -1,155 +1,148 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:trivia_app/core/domain/models/quiz.dart';
-import 'package:trivia_app/core/services/auth_service.dart';
+import 'package:trivia_app/core/domain/models/quiz_session.dart';
 import 'package:trivia_app/core/services/quiz_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';
+import 'package:trivia_app/features/category/view/colored_card.dart';
+import 'package:trivia_app/features/questions/view/questions_screen.dart';
 
 class MultiplayerLobbyScreen extends StatefulWidget {
-  final String joinCode;
-  final Quiz quiz;
+  final QuizSession session;
+  final GradientColor color;
+  final bool isLeader;
+  final String currentUserId;
 
   const MultiplayerLobbyScreen({
     super.key,
-    required this.joinCode,
-    required this.quiz,
+    required this.session,
+    required this.color,
+    required this.isLeader,
+    required this.currentUserId,
   });
 
   @override
-  State<MultiplayerLobbyScreen> createState() => _MultiplayerLobbyScreenState();
+  _MultiplayerLobbyScreenState createState() => _MultiplayerLobbyScreenState();
 }
 
 class _MultiplayerLobbyScreenState extends State<MultiplayerLobbyScreen> {
   late final DatabaseReference sessionRef;
-  late final Stream<DatabaseEvent> sessionStream;
-
-  final QuizService quizService = getIt<QuizService>();
-  final AuthService authService = getIt<AuthService>();
+  StreamSubscription<DatabaseEvent>? sessionSub;
+  final QuizService _quizService = getIt<QuizService>();
 
   String? leaderId;
+  String status = 'UNKNOWN';
   List<String> players = [];
-  String status = "CREATED";
-  bool isLoading = false;
-
-  bool get isLeader => authService.getCurrentUser()?.uid == leaderId;
+  bool _navigated = false;
 
   @override
   void initState() {
     super.initState();
-    sessionRef = FirebaseDatabase.instance.ref(widget.joinCode);
-    sessionStream = sessionRef.onValue;
 
-    sessionStream.listen((event) {
-      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+    sessionRef =
+        FirebaseDatabase.instance.ref('sessions/${widget.session.joinCode}');
 
-      if (data == null) {
-        // if (mounted) {
-        //   Navigator.of(context).popUntil((route) => route.isFirst);
-        // }
-        return;
-      }
-
-      setState(() {
-        leaderId = data['leader'];
-        status = data['status'];
-        players = List<String>.from(data['players']);
-      });
-
-      if (status == "ACTIVE") {
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, "/quiz-start");
-        }
-      }
-    });
+    sessionSub = sessionRef.onValue.listen(_onSessionEvent);
   }
 
-  Future<void> _startGame(String joinCode) async {
-    setState(() => isLoading = true);
+  void _onSessionEvent(DatabaseEvent event) {
+    final snap = event.snapshot;
 
-    try {
-      await quizService.startQuizSession(joinCode);
-    } catch (e) {
-      if (!mounted) return;
-      _showErrorDialog(
-        "Oops!",
-        "Only the person who created this session can start the game.",
-      );
-    } finally {
-      if (mounted) setState(() => isLoading = false);
+    if (!snap.exists || snap.value == null) {
+      return;
     }
-  }
 
-  Future<void> _endSessionIfLeader() async {
-    if (isLeader) {
-      await quizService.endQuiz();
-    }
-  }
-
-  void _showErrorDialog(String title, String message) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("OK"),
-          ),
-        ],
-      ),
+    final data = Map<String, dynamic>.from(
+      snap.value as Map<dynamic, dynamic>,
     );
+
+    final newStatus = (data['status'] as String?) ?? 'UNKNOWN';
+    final newLeader = (data['leader'] as String?) ?? '';
+    final newPlayers =
+        (data['players'] as List<dynamic>?)?.cast<String>() ?? <String>[];
+
+    setState(() {
+      status = newStatus;
+      leaderId = newLeader;
+      players = newPlayers;
+    });
+
+    if (!_navigated && status == 'ACTIVE') {
+      _navigated = true;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QuestionsScreen(
+            quiz: widget.session.quiz,
+            gradientColor: widget.color,
+          ),
+        ),
+      );
+    }
   }
 
   @override
   void dispose() {
-    _endSessionIfLeader();
+    sessionSub?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final amILeader = widget.currentUserId == leaderId;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Lobby"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () async {
-            await _endSessionIfLeader();
-            if (mounted) Navigator.of(context).pop();
-          },
-        ),
-      ),
+      appBar: AppBar(title: const Text('Lobby')),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(24),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 20),
             Text(
-              "Join Code: ${widget.joinCode}",
-              style: const TextStyle(fontSize: 20),
+              'Code: ${widget.session.joinCode}',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 20),
-            const Text("Players:", style: TextStyle(fontSize: 18)),
             const SizedBox(height: 8),
-            ...players.map((p) => Text(p)).toList(),
-            const Spacer(),
-            if (isLeader)
-              ElevatedButton.icon(
-                icon: isLoading
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.play_arrow),
-                label: Text(isLoading ? "Starting..." : "Start Game"),
-                onPressed: isLoading ? null : () => _startGame(widget.joinCode),
+            Text(
+              'Category: ${widget.session.quiz.category}',
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 24),
+
+            // Player list
+            Text(
+              'Players (${players.length}):',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ListView.builder(
+                itemCount: players.length,
+                itemBuilder: (_, i) => ListTile(
+                  leading: Icon(
+                    i == 0 ? Icons.star : Icons.person,
+                    color: i == 0 ? Colors.amber : Colors.grey,
+                  ),
+                  title: Text(players[i]),
+                ),
               ),
-            const SizedBox(height: 20),
+            ),
+            const SizedBox(height: 16),
+
+            if (amILeader)
+              ElevatedButton(
+                onPressed: status == 'WAITING'
+                    ? () => _quizService
+                        .startQuizSession(widget.session.joinCode!)
+                        .catchError((_) {})
+                    : null,
+                child: const Text('Start Quiz'),
+              )
+            else
+              const Text('Waiting for leader to start…'),
+
+            const SizedBox(height: 16),
           ],
         ),
       ),

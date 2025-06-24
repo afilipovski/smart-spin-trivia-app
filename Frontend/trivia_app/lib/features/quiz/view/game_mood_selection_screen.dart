@@ -1,8 +1,9 @@
+// lib/features/quiz/view/game_mode_selection_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:trivia_app/core/domain/models/quiz.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
 import 'package:trivia_app/features/questions/view/questions_screen.dart';
-import 'package:trivia_app/features/quiz/view/multiplayer_lobby_screen.dart';
 import 'package:trivia_app/features/quiz/view/multiplayer_session_gateway_screen.dart';
 
 class GameModeSelectionScreen extends StatelessWidget {
@@ -54,8 +55,9 @@ class GameModeSelectionScreen extends StatelessWidget {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (_) =>  MultiplayerSessionGatewayScreen(
+                    builder: (_) => MultiplayerSessionGatewayScreen(
                       quiz: quiz,
+                      gradientColor: gradientColor,
                     ),
                   ),
                 );

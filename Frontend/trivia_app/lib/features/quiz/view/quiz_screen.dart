@@ -9,12 +9,10 @@ import 'package:trivia_app/core/services/service_locator.dart';
 import 'package:trivia_app/core/services/user_service.dart';
 import 'package:trivia_app/features/authentication/view/login_screen.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';
-import 'package:trivia_app/features/questions/view/questions_screen.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_bloc.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_event.dart';
 import 'package:trivia_app/features/quiz/bloc/quiz_state.dart';
 import 'package:trivia_app/features/quiz/view/game_mood_selection_screen.dart';
-import 'package:trivia_app/features/quiz/view/multiplayer_session_gateway_screen.dart';
 import '../../user_profile/view/user_profile_screen.dart';
 
 class QuizScreen extends StatefulWidget {
@@ -90,7 +88,7 @@ class _QuizScreenState extends State<QuizScreen> {
             );
           }
 
-          final quizState = state as QuizLoadSuccess;
+          final quizState = state;
 
           return SafeArea(
             child: Padding(
