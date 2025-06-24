@@ -79,9 +79,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await _loadUserFriendships();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -94,135 +97,185 @@ class _ProfileScreenState extends State<ProfileScreen> {
             );
           },
         ),
+        title: const Text(
+          'My Profile',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
       ),
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
-            : Padding(
-                padding: const EdgeInsets.all(20.0),
+            : SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 20),
                     Center(
                       child: Column(
                         children: [
                           CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Colors.grey[300],
-                            child: const Icon(Icons.person,
-                                size: 50, color: Colors.black),
+                            radius: 60,
+                            backgroundColor: const Color(0xFF8668FF),
+                            child: userProfile?.fullName != null &&
+                                    userProfile!.fullName.isNotEmpty
+                                ? Text(
+                                    userProfile!.fullName[0].toUpperCase(),
+                                    style: const TextStyle(
+                                        fontSize: 40, color: Colors.white),
+                                  )
+                                : const Icon(Icons.person,
+                                    size: 60, color: Colors.white),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 15),
                           Text(
-                            userProfile?.fullName ?? '',
+                            userProfile?.fullName ?? 'Guest User',
                             style: const TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
+                                fontSize: 26,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87),
                           ),
                           Text(
-                            userProfile?.email ?? '',
+                            userProfile?.email ?? 'No email provided',
                             style: const TextStyle(
                                 fontSize: 16, color: Colors.grey),
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.cake,
+                                  size: 20, color: Colors.grey),
+                              const SizedBox(width: 8),
+                              Text(
+                                "Born: ${userProfile?.birthDate.day}.${userProfile?.birthDate.month}.${userProfile?.birthDate.year}",
+                                style: const TextStyle(
+                                    fontSize: 16, color: Colors.black87),
+                              ),
+                              const SizedBox(width: 20),
+                              const Icon(Icons.local_fire_department,
+                                  color: Colors.orange, size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                "Streak: ${userProfile?.streak ?? 0} Days",
+                                style: const TextStyle(
+                                    fontSize: 16, color: Colors.black87),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    const Divider(),
-                    Text(
-                      "Personal Information",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Icon(Icons.calendar_today, size: 16),
-                        const SizedBox(width: 17),
-                        Text(
-                          "Date of Birth: ${userProfile?.birthDate.day}.${userProfile?.birthDate.month}.${userProfile?.birthDate.year}",
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Icon(Icons.local_fire_department,
-                            color: Colors.orange),
-                        const SizedBox(width: 10),
-                        Text(
-                          "Daily Streak: ${userProfile?.streak} Days",
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
                     if (_friendRequests.isNotEmpty) ...[
                       const Divider(),
+                      const SizedBox(height: 10),
                       Text(
                         "Pending Friend Requests",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey[700],
+                          color: Colors.grey[800],
                         ),
                       ),
                       const SizedBox(height: 10),
-                      Column(
-                        children: _friendRequests.map((user) {
-                          final initiator = user.friendshipInitiator;
-                          return ListTile(
-                            title: Text(initiator?.fullName ?? ''),
-                            trailing: ElevatedButton(
-                              onPressed: () => _acceptFriendRequest(
-                                  user.friendshipInitiatorId ?? ''),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 6),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                      ..._friendRequests.map((user) {
+                        final initiator = user.friendshipInitiator;
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          elevation: 1,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: Colors.grey[300],
+                                  child: Text(
+                                    initiator?.fullName[0].toUpperCase() ?? '?',
+                                    style: const TextStyle(
+                                        color: Colors.black87,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
-                              ),
-                              child: const Text("Accept",
-                                  style: TextStyle(color: Colors.white)),
+                                const SizedBox(width: 15),
+                                Expanded(
+                                  child: Text(
+                                    initiator?.fullName ?? 'Unknown User',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () => _acceptFriendRequest(
+                                          user.friendshipInitiatorId ?? ''),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.green,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12),
+                                      ),
+                                      child: const Text("Accept",
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ),
+                               
+                                  ],
+                                ),
+                              ],
                             ),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 10),
+                          ),
+                        );
+                      }),
+                      const SizedBox(height: 20),
                     ],
                     const Divider(),
+                    const SizedBox(height: 10),
                     Text(
-                      "Friends and their streaks",
+                      "My Friends",
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey[700],
+                        color: Colors.grey[800],
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Expanded(
-                      child: userFriendships != null &&
-                              userFriendships!.isNotEmpty
-                          ? ListView.builder(
-                              itemCount: userFriendships!.length,
-                              itemBuilder: (context, index) {
-                                final friendship = userFriendships![index];
-                                if (!friendship.friendshipAccepted)
-                                  return const SizedBox.shrink();
+                    userFriendships != null && userFriendships!.isNotEmpty
+                        ? ListView.builder(
+                            shrinkWrap: true,
+                            physics:
+                                const NeverScrollableScrollPhysics(),
+                            itemCount: userFriendships!
+                                .where((f) => f.friendshipAccepted)
+                                .length,
+                            itemBuilder: (context, index) {
+                              final acceptedFriendships = userFriendships!
+                                  .where((f) => f.friendshipAccepted)
+                                  .toList();
+                              final friendship = acceptedFriendships[index];
 
-                                var friend = friendship.friendshipReceiver;
-                                if (friend != null &&
-                                    friend.id == userProfile?.id) {
-                                  friend = friendship.friendshipInitiator;
-                                }
+                              var friend = friendship.friendshipReceiver;
+                              if (friend != null &&
+                                  friend.id == userProfile?.id) {
+                                friend = friendship.friendshipInitiator;
+                              }
 
-                                return ListTile(
+                              if (friend == null) {
+                                return const SizedBox.shrink();
+                              }
+
+                              return Card(
+                                margin: const EdgeInsets.symmetric(vertical: 5),
+                                elevation: 1,
+                                child: ListTile(
                                   onTap: () {
                                     Navigator.push(
                                       context,
@@ -233,44 +286,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     );
                                   },
                                   leading: CircleAvatar(
-                                    backgroundColor: Colors.grey[300],
+                                    backgroundColor: const Color(0xFF8668FF)
+                                        .withValues(alpha: 0.2),
                                     child: Text(
-                                      friend!.fullName[0].toUpperCase(),
-                                      style:
-                                          const TextStyle(color: Colors.black),
+                                      friend.fullName[0].toUpperCase(),
+                                      style: const TextStyle(
+                                          color: Color(0xFF8668FF),
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   ),
-                                  title: Text(friend.fullName),
+                                  title: Text(
+                                    friend.fullName,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w500),
+                                  ),
                                   trailing: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       const Icon(Icons.local_fire_department,
-                                          color: Colors.orange),
+                                          color: Colors.orange, size: 20),
                                       const SizedBox(width: 5),
-                                      Text("${friend.streak}"),
+                                      Text(
+                                        "${friend.streak ?? 0}",
+                                        style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                     ],
                                   ),
-                                );
-                              },
-                            )
-                          : const Center(child: Text("No friends yet.")),
-                    ),
-                    const SizedBox(height: 10),
+                                ),
+                              );
+                            },
+                          )
+                        : const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 20.0),
+                              child: Text(
+                                "No friends yet. Add some to see their streaks!",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                          ),
+                    const SizedBox(height: 20),
                     Row(
                       children: [
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AddFriendScreen()),
-                              );
+                              Navigator.of(context)
+                                  .push(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const AddFriendScreen()),
+                                  )
+                                  .then((_) =>
+                                      _loadData());
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF8668FF),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 16.0, horizontal: 40.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
@@ -278,12 +353,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: const Text(
                               'Add Friends',
                               style:
-                                  TextStyle(color: Colors.white, fontSize: 16),
+                                  TextStyle(color: Colors.white, fontSize: 18),
                             ),
                           ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
