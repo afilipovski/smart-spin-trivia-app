@@ -1,8 +1,6 @@
-// lib/features/quiz/view/multiplayer_session_gateway_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:trivia_app/core/domain/models/quiz.dart';
-import 'package:trivia_app/core/domain/models/quiz_session.dart'; // ← Added
+import 'package:trivia_app/core/domain/models/quiz_session.dart';
 import 'package:trivia_app/core/domain/exceptions/http_response_exception.dart';
 import 'package:trivia_app/core/services/quiz_service.dart';
 import 'package:trivia_app/core/services/service_locator.dart';

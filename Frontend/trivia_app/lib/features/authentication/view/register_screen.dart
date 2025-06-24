@@ -78,13 +78,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     String? error;
     if (name.length < 6) {
       error = 'Name must be at least 6 chars.';
-    } else if (!_validAge(dob))
+    } else if (!_validAge(dob)) {
       error = 'You must be 12+ years old.';
-    else if (!_validEmail(email))
+    } else if (!_validEmail(email)) {
       error = 'Enter a valid email.';
-    else if (pass.length < 8)
+    } else if (pass.length < 8) {
       error = 'Password needs 8+ chars.';
-    else if (pass != confirm) error = 'Passwords do not match.';
+    } else if (pass != confirm) {
+      error = 'Passwords do not match.';
+    }
 
     if (error != null) {
       _showMsg(error);
@@ -101,7 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) =>  QuizScreen()),
+        MaterialPageRoute(builder: (_) => QuizScreen()),
       );
     } on FirebaseAuthException catch (e) {
       final msg = e.code == 'email-already-in-use'
@@ -176,7 +178,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  // Frosted Card
                   Card(
                     color: Colors.white24,
                     elevation: 6,
@@ -187,7 +188,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       padding: const EdgeInsets.all(20),
                       child: Column(
                         children: [
-                          // Full Name
                           TextField(
                             controller: _fullNameCtrl,
                             decoration: _inputDeco(
@@ -198,8 +198,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: const TextStyle(color: Colors.white),
                           ),
                           const SizedBox(height: 16),
-
-                          // Birthday
                           TextField(
                             controller: _dobCtrl,
                             readOnly: true,
@@ -212,8 +210,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: const TextStyle(color: Colors.white),
                           ),
                           const SizedBox(height: 16),
-
-                          // Email
                           TextField(
                             controller: _emailCtrl,
                             keyboardType: TextInputType.emailAddress,
@@ -225,8 +221,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: const TextStyle(color: Colors.white),
                           ),
                           const SizedBox(height: 16),
-
-                          // Password
                           TextField(
                             controller: _passCtrl,
                             obscureText: _obscurePass,
@@ -247,8 +241,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: const TextStyle(color: Colors.white),
                           ),
                           const SizedBox(height: 16),
-
-                          // Confirm Password
                           TextField(
                             controller: _confirmPassCtrl,
                             obscureText: _obscureConfirmPass,
@@ -269,8 +261,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: const TextStyle(color: Colors.white),
                           ),
                           const SizedBox(height: 24),
-
-                          // Register Button
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(

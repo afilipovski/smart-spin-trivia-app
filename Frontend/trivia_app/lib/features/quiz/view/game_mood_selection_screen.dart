@@ -1,5 +1,3 @@
-// lib/features/quiz/view/game_mode_selection_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:trivia_app/core/domain/models/quiz.dart';
 import 'package:trivia_app/features/category/view/colored_card.dart';

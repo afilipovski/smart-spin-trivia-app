@@ -24,8 +24,7 @@ class ColoredCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(24),
       boxShadow: [
         BoxShadow(
-          // ignore: deprecated_member_use
-          color: gradient.colors.first.withOpacity(0.4),
+          color: gradient.colors.first.withValues(alpha: 0.4),
           blurRadius: 12,
           spreadRadius: 2,
           offset: const Offset(0, 6),
@@ -123,7 +122,6 @@ class _CategoryCard extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Stack(
             children: [
-              // Check / Play icon
               Positioned(
                 top: 0,
                 right: 0,
@@ -140,7 +138,6 @@ class _CategoryCard extends StatelessWidget {
                   ),
                 ),
               ),
-              // Category name
               Center(
                 child: Text(
                   categoryName,

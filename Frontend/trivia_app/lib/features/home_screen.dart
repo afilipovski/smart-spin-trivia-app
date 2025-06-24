@@ -52,7 +52,6 @@ class _HomePageState extends State<HomePage>
             child: SafeArea(
               child: Stack(
                 children: [
-                  // decorative bubbles
                   Positioned(
                     top: 80,
                     left: 40,
@@ -78,12 +77,10 @@ class _HomePageState extends State<HomePage>
                     ),
                   ),
 
-                  // main column
                   Column(
                     children: [
                       const Spacer(flex: 2),
 
-                      // Radial glow + astronaut
                       Container(
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,

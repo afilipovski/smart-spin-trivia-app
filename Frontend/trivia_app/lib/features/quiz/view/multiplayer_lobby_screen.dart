@@ -110,7 +110,6 @@ class _MultiplayerLobbyScreenState extends State<MultiplayerLobbyScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Player list
             Text(
               'Players (${players.length}):',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),

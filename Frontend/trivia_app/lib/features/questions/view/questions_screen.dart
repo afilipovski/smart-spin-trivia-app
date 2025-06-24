@@ -13,10 +13,10 @@ class QuestionsScreen extends StatelessWidget {
   final GradientColor gradientColor;
 
   const QuestionsScreen({
-    Key? key,
+    super.key,
     required this.quiz,
     required this.gradientColor,
-  }) : super(key: key);
+  });
 
   LinearGradient get _backgroundGradient {
     switch (gradientColor) {
@@ -39,8 +39,7 @@ class QuestionsScreen extends StatelessWidget {
         return const LinearGradient(
             colors: [Color(0xFF26A69A), Color(0xFF80CBC4)]);
       case GradientColor.other:
-      default:
-        return const LinearGradient(
+      return const LinearGradient(
             colors: [Color(0xFF90A4AE), Color(0xFFCFD8DC)]);
     }
   }
@@ -62,13 +61,12 @@ class QuestionsScreen extends StatelessWidget {
   void _goBack(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const QuizScreen()),
+      MaterialPageRoute(builder: (_) => QuizScreen()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    // trigger loading
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<QuestionBloc>().add(
             QuestionsScreenInitialized(quizId: quiz.id),
@@ -90,14 +88,13 @@ class QuestionsScreen extends StatelessWidget {
         decoration: BoxDecoration(gradient: _backgroundGradient),
         child: Stack(
           children: [
-            // Decorative bubbles
             Positioned(
               top: 100,
               left: 40,
               child: Container(
                 width: 80,
                 height: 80,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white24,
                   shape: BoxShape.circle,
                 ),
@@ -109,14 +106,12 @@ class QuestionsScreen extends StatelessWidget {
               child: Container(
                 width: 100,
                 height: 100,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white12,
                   shape: BoxShape.circle,
                 ),
               ),
             ),
-
-            // Main content
             BlocConsumer<QuestionBloc, QuestionState>(
               listener: (ctx, state) {
                 if (state is QuestionAnswersFinished) {
@@ -138,9 +133,8 @@ class QuestionsScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         const SizedBox(height: 120),
-                        // Question card
                         Card(
-                          color: Colors.white.withOpacity(0.3),
+                          color: Colors.white.withValues(alpha: 0.3),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -162,7 +156,6 @@ class QuestionsScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 32),
 
-                        // Choices list
                         ...List.generate(state.question.choices!.length, (i) {
                           final choice = state.question.choices![i];
                           final selected = state.selectedIndex == i;
@@ -217,8 +210,6 @@ class QuestionsScreen extends StatelessWidget {
                         }),
 
                         const Spacer(),
-
-                        // Next button
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(

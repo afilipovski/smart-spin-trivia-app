@@ -1,5 +1,3 @@
-// lib/core/services/quiz_service.dart
-
 import 'dart:convert';
 import 'package:trivia_app/core/domain/dtos/answer_question_request_dto.dart';
 import 'package:trivia_app/core/domain/dtos/answer_question_response_dto.dart';

@@ -1,5 +1,3 @@
-// lib/features/quiz/view/join_session_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:trivia_app/core/domain/exceptions/http_response_exception.dart';
 import 'package:trivia_app/core/services/quiz_service.dart';

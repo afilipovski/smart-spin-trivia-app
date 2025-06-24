@@ -75,7 +75,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _acceptFriendRequest(String userId) async {
     await userFriendshipService.acceptFriendRequest(userId);
-    // Reload both requests and friendships after accepting
     await _loadFriendRequests();
     await _loadUserFriendships();
   }
@@ -116,7 +115,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    // --- User Profile Header ---
                     Center(
                       child: Column(
                         children: [
@@ -173,7 +171,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    // --- Pending Friend Requests ---
                     if (_friendRequests.isNotEmpty) ...[
                       const Divider(),
                       const SizedBox(height: 10),
@@ -240,7 +237,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       }),
                       const SizedBox(height: 20),
                     ],
-                    // --- Friends List ---
                     const Divider(),
                     const SizedBox(height: 10),
                     Text(
@@ -254,9 +250,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 10),
                     userFriendships != null && userFriendships!.isNotEmpty
                         ? ListView.builder(
-                            shrinkWrap: true, // Important for nested list views
+                            shrinkWrap: true,
                             physics:
-                                const NeverScrollableScrollPhysics(), // Disable scrolling for this nested list
+                                const NeverScrollableScrollPhysics(),
                             itemCount: userFriendships!
                                 .where((f) => f.friendshipAccepted)
                                 .length,
@@ -291,7 +287,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   },
                                   leading: CircleAvatar(
                                     backgroundColor: const Color(0xFF8668FF)
-                                        .withOpacity(0.2),
+                                        .withValues(alpha: 0.2),
                                     child: Text(
                                       friend.fullName[0].toUpperCase(),
                                       style: const TextStyle(
@@ -332,7 +328,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                     const SizedBox(height: 20),
-                    // --- Add Friends Button ---
                     Row(
                       children: [
                         Expanded(
@@ -345,7 +340,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             const AddFriendScreen()),
                                   )
                                   .then((_) =>
-                                      _loadData()); // Refresh data when returning
+                                      _loadData());
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF8668FF),
