@@ -1,9 +1,6 @@
 package com.example.smartspinapi.service;
 
-import com.example.smartspinapi.model.entity.BaseEntity;
-import com.example.smartspinapi.model.entity.QuizQuestion;
-import com.example.smartspinapi.model.entity.QuizSession;
-import com.example.smartspinapi.model.entity.UserProfile;
+import com.example.smartspinapi.model.entity.*;
 import com.example.smartspinapi.model.exception.MaximumQuestionsReachedException;
 import com.example.smartspinapi.repository.QuizQuestionRepository;
 import jakarta.persistence.EntityExistsException;
@@ -59,5 +56,9 @@ public class QuizQuestionService {
 
     public void save(QuizQuestion quizQuestion) {
         quizQuestionRepository.save(quizQuestion);
+    }
+
+    public long countQuizQuestionsByCategory(QuizCategory category) {
+        return quizQuestionRepository.countQuizQuestionsByCategory(category);
     }
 }
