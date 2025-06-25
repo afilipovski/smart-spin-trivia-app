@@ -18,14 +18,81 @@ class QuizService {
 
   Future<QuizSession> createQuizSession(String quizId) async {
     final dto = CreateQuizSessionDto(quizId: quizId);
-      try {
+
+    try {
       final response = await _client.post("quiz-session", dto);
       return QuizSession.fromJson(response);
     } on HttpResponseException catch (e) {
       if (e.statusCode == 422) {
-        return getQuizSession();
+        try {
+          final errorData = jsonDecode(e.message ?? '{}');
+          final errorMessage =
+              errorData['message'] ?? 'Session creation failed';
+
+          // Check if user already has an active session
+          if (errorMessage.contains('already has an active session') ||
+              errorMessage.contains('session already exists')) {
+            // Try to get existing session
+            try {
+              return await getQuizSession();
+            } catch (getError) {
+              // If getting existing session fails, clean up and retry
+              await _cleanupUserSession();
+              throw HttpResponseException(
+                422,
+                message: 'Please try creating a new session again',
+              );
+            }
+          } else {
+            // For other 422 errors, provide specific feedback
+            throw HttpResponseException(
+              422,
+              message: errorMessage,
+            );
+          }
+        } catch (parseError) {
+          // If we can't parse the error, provide generic feedback
+          throw HttpResponseException(
+            422,
+            message: 'Unable to create session. Please try again.',
+          );
+        }
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  Future<QuizSession> createQuizSessionSafe(String quizId) async {
+    // Enhanced session creation with validation
+    try {
+      final response = await _client.post(
+          "quiz-session", CreateQuizSessionDto(quizId: quizId));
+      return QuizSession.fromJson(response);
+    } on HttpResponseException catch (e) {
+      if (e.statusCode == 422) {
+        // Parse specific 422 error for detailed handling
+        final errorMessage = e.message ?? '';
+
+        if (errorMessage.contains('already has an active session')) {
+          // Try to get existing session
+          return await getQuizSession();
+        } else {
+          // Re-throw for specific handling in UI
+          rethrow;
+        }
       }
       rethrow;
+    }
+  }
+
+  Future<void> _cleanupUserSession() async {
+    try {
+      await _client.post(
+          "quiz-session/end", {'userTime': DateTime.now().toIso8601String()});
+    } catch (e) {
+      // Ignore cleanup errors
+      print('Session cleanup failed: $e');
     }
   }
 
@@ -68,5 +135,25 @@ class QuizService {
 
   Future<void> startQuizSession(String joinCode) async {
     await _client.post("quiz-session/start/$joinCode", "");
+  }
+
+  Future<bool> hasActiveSession() async {
+    try {
+      await getQuizSession();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+// Add this method to properly end sessions
+  Future<void> forceEndSession() async {
+    try {
+      await _client.post(
+          "quiz-session/end","");
+    } catch (e) {
+      // Session might not exist, which is acceptable for cleanup
+      print('Force end session result: $e');
+    }
   }
 }

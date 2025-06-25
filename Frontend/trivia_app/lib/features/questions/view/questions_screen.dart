@@ -13,10 +13,10 @@ class QuestionsScreen extends StatelessWidget {
   final GradientColor gradientColor;
 
   const QuestionsScreen({
-    Key? key,
+    super.key,
     required this.quiz,
     required this.gradientColor,
-  }) : super(key: key);
+  });
 
   LinearGradient get _backgroundGradient {
     switch (gradientColor) {
@@ -62,7 +62,7 @@ class QuestionsScreen extends StatelessWidget {
   void _goBack(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const QuizScreen()),
+      MaterialPageRoute(builder: (_) =>  QuizScreen()),
     );
   }
 
@@ -97,7 +97,7 @@ class QuestionsScreen extends StatelessWidget {
               child: Container(
                 width: 80,
                 height: 80,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white24,
                   shape: BoxShape.circle,
                 ),
@@ -109,7 +109,7 @@ class QuestionsScreen extends StatelessWidget {
               child: Container(
                 width: 100,
                 height: 100,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white12,
                   shape: BoxShape.circle,
                 ),

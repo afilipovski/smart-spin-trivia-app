@@ -23,7 +23,17 @@ class UserService {
     final response = await _client.get(path);
     return UserProfile.fromJson(response);
   }
+  
+  Future<UserProfile?> getUserProfileById(String uid) async {
+    final user = authService.getCurrentUser();
 
+    if (user == null) {
+      return null;
+    }
+    final path = "user-profile/$uid";
+    final response = await _client.get(path);
+    return UserProfile.fromJson(response);
+  }
   Future<void> registerUser({
     required String fullName,
     required DateTime birthDate,

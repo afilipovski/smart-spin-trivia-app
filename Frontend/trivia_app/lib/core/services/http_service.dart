@@ -6,36 +6,42 @@ import 'package:trivia_app/core/extensions/http_response_extension.dart';
 import 'package:trivia_app/globals.dart';
 
 class HttpService {
+Future<Map<String, String>> _buildHeaders() async {
+    try {
+      // Force token refresh to ensure validity
+      final token = await FirebaseAuth.instance.currentUser?.getIdToken(true);
 
-  Future<Map<String, String>> _buildHeaders() async {
-    final token = await FirebaseAuth.instance.currentUser?.getIdToken();
-    return {
-      HttpHeaders.acceptHeader: 'application/json',
-      HttpHeaders.contentTypeHeader: 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
+      return {
+        HttpHeaders.acceptHeader: 'application/json',
+        HttpHeaders.contentTypeHeader: 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      };
+    } catch (e) {
+      // Handle token refresh failure
+      throw Exception('Failed to refresh authentication token');
+    }
   }
+
 
   Future<dynamic> get(
     String path, {
     Map<String, dynamic>? queryParameters,
   }) async {
     final url = buildUri(path, queryParameters);
-    final headers = await _buildHeaders(); 
+    final headers = await _buildHeaders();
 
     final response = await http.get(
       url,
       headers: headers,
     );
 
-    response.ensureSuccessStatusCode(); 
+    response.ensureSuccessStatusCode();
     return _decodeBody(response.body);
   }
 
-
   Future<dynamic> post(String path, Object requestBody) async {
     final endpoint = Uri.parse(baseApiUrl + path);
-    final headers = await _buildHeaders(); 
+    final headers = await _buildHeaders();
 
     final response = await http.post(
       endpoint,
@@ -48,7 +54,7 @@ class HttpService {
 
   Future<dynamic> patch(String path, Object requestBody) async {
     final endpoint = Uri.parse(baseApiUrl + path);
-    final headers = await _buildHeaders(); 
+    final headers = await _buildHeaders();
 
     final response = await http.patch(
       endpoint,
@@ -61,7 +67,7 @@ class HttpService {
 
   Future<dynamic> put(String path, Object requestBody) async {
     final endpoint = Uri.parse(baseApiUrl + path);
-    final headers = await _buildHeaders(); 
+    final headers = await _buildHeaders();
 
     final response = await http.put(
       endpoint,
@@ -74,7 +80,7 @@ class HttpService {
 
   Future<dynamic> delete(String path) async {
     final endpoint = Uri.parse(baseApiUrl + path);
-    final headers = await _buildHeaders(); 
+    final headers = await _buildHeaders();
 
     final response = await http.delete(
       endpoint,
