@@ -102,10 +102,11 @@ class _MultiplayerLobbyScreenState extends State<MultiplayerLobbyScreen> {
   }
 
   Future<void> _startSession() async {
-    if (_isStarting || status != 'WAITING') return;
+    if (_isStarting || status != 'CREATED') return;
     setState(() => _isStarting = true);
     try {
       await _http.post('quiz-session/start/${widget.session.joinCode}', {});
+      _goToQuestions();
     } catch (e) {
       setState(() => errorMessage = 'Start error: $e');
     } finally {
