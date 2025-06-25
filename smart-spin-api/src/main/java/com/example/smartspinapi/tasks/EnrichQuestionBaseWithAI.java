@@ -42,10 +42,10 @@ public class EnrichQuestionBaseWithAI implements CommandLineRunner {
         for (var category : categoryList) {
             long questionCount = quizQuestionService.countQuizQuestionsByCategory(category);
             if (questionCount > 10) {
-                System.out.println("Category " + category + " has enough questions, skipping.");
+                System.out.println("Category " + category.getId() + " has enough questions, skipping.");
                 continue;
             }
-            System.out.println("Processing questions for category " + category);
+            System.out.println("Processing questions for category " + category.getId());
 
             ChatMessage systemMessage = new ChatMessage();
             systemMessage.role = "system";
