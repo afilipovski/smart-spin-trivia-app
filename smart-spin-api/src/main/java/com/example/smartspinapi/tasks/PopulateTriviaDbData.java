@@ -7,24 +7,28 @@ import com.example.smartspinapi.model.dto.triviaapi.TriviaApiQuestion;
 import com.example.smartspinapi.model.entity.*;
 import com.example.smartspinapi.service.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import javax.annotation.PostConstruct;
 import java.util.Objects;
 import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
-public class PopulateTriviaDbData {
+@Order(1)
+public class PopulateTriviaDbData implements CommandLineRunner {
     private final QuizCategoryService quizCategoryService;
     private final QuizService quizService;
     private final QuizQuestionService quizQuestionService;
     private final LimitedTimeEventService limitedTimeEventService;
     private final QuizQuestionChoiceService quizQuestionChoiceService;
 
-    @PostConstruct
-    public synchronized void init() throws InterruptedException {
+    @Override
+    public synchronized void run(String... args) throws InterruptedException {
+        System.out.println("Initializing question categories from TriviaDB");
+
         if (!quizCategoryService.findAll().isEmpty())
             return;
 

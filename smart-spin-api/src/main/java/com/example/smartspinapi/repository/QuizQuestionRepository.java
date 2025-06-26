@@ -11,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, UUID> {
     public List<QuizQuestion> findQuizQuestionsByCategory(QuizCategory category);
+    long countQuizQuestionsByCategory(QuizCategory category);
 }
